@@ -1,0 +1,186 @@
+<!--
+
+Copyright 2005 Bytecode Pty Ltd.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+<project name="opencsv" default="jar">
+	
+	<target name="init" description="Initialise build parameters">
+		<property name="src.dir" location="src"/>
+		<property name="test.dir" location="test"/>
+		<property name="doc.dir" location="doc"/>
+		<property name="classes.dir" location="build/classes"/>
+		<property name="test.classes.dir" location="build/test.classes"/>
+		<property name="deploy.dir" location="deploy"/>
+		<property name="lib.dir" location="lib"/>
+		<property name="app.name" value="opencsv"/>
+		
+		<!-- where resulting binaries are placed -->
+		<property name="dist.src.dir" location="${deploy.dir}/src"/>
+		
+		<!-- Setup our version info -->
+		<property name="version.file" value="build.version"/>
+		<property file="${version.file}"/>
+		
+		<property name="build.version.brief"
+			value="${build.release.major}.${build.release.minor}"/>
+		<property name="build.version"
+			value="${build.version.brief}.${build.number}"/>
+		<property name="build.version.tag"
+			value="Release_${build.release.major}_${build.release.minor}_${build.number}"/>
+		
+		<property name="zip.dir.name"
+			value="${app.name}-${build.release.major}.${build.release.minor}"/>
+		
+		<mkdir dir="${deploy.dir}"/>
+		
+		<!-- Setup a useful classpath -->
+		<path id="useful.jars">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar"/>
+			</fileset>
+		</path>
+				
+	</target>
+	
+	<target name="build" depends="init" description="Compile opencsv">
+
+		<mkdir dir="${classes.dir}"/>
+
+		<javac srcdir="${src.dir}" destdir="${classes.dir}"
+			classpathref="useful.jars"/>
+		
+	</target>
+	
+	<target name="jar" depends="clean,build" description="Create opencsv jar file">
+		<mkdir dir="${deploy.dir}"/>
+
+        <tstamp>
+            <format property="build.timestamp" pattern="yyyy-MM-dd HH:mm:ss" locale="en"/>
+        </tstamp>
+		
+		<jar destfile="${deploy.dir}/${app.name}-${build.version.brief}.jar"
+			basedir="${classes.dir}">
+			<include name="**/*.class"/>
+            <manifest>
+                <attribute name="Build-Timestamp" value="${build.timestamp}" />
+                <attribute name="Implementation-Title" value="${app.name}" />
+                <attribute name="Implementation-Version" value="${build.version.brief}" />
+            </manifest>
+		</jar>
+	</target>
+	
+	<target name="deploy.src" depends="jar,javadoc"
+		description="Deploys a source code distro">
+		
+		<delete dir="${dist.src.dir}/${zip.dir.name}"/>
+		<mkdir dir="${dist.src.dir}/${zip.dir.name}"/>
+		
+		<copy todir="${dist.src.dir}/${zip.dir.name}">
+			<fileset dir="${basedir}">
+				<include name="src/**/*.*"/>
+				<include name="test/**/*.*"/>
+				<include name="lib/**/*.*"/>
+				<include name="doc/**/*.*"/>
+				<include name="examples/**/*.*"/>
+				<include name="deploy/*.jar"/>
+			</fileset>
+			<fileset dir="${basedir}" includes="*.*"/>
+		</copy>
+		
+		<property name="src.tar.name"
+			value="${dist.src.dir}/${zip.dir.name}-src-with-libs.tar"/>
+		
+		<tar destfile="${src.tar.name}" basedir="${dist.src.dir}"
+			includes="${zip.dir.name}/**/*.*"/>
+		
+		<gzip src="${src.tar.name}" destfile="${src.tar.name}.gz"/>
+		
+		<delete file="${src.tar.name}"/>
+		
+	</target>
+	
+	<target name="test" depends="build" description="Runs junit test suite">
+		
+		<mkdir dir="${test.classes.dir}"/>
+		
+		<javac srcdir="${test.dir}" destdir="${test.classes.dir}"
+			classpathref="useful.jars">
+			<classpath>
+				<pathelement location="${classes.dir}"/>
+			</classpath>
+			
+		</javac>
+		
+		<java classname="au.com.bytecode.opencsv.CSVReaderTest">
+			<classpath>
+				<pathelement location="${lib.dir}/junit.jar"/>
+				<pathelement location="${classes.dir}"/>
+				<pathelement location="${test.classes.dir}"/>
+			</classpath>
+		</java>
+		
+	</target>
+	
+	<target name="clean" depends="init" description="Remove all class files">
+		<delete dir="${classes.dir}"/>
+		<delete dir="${test.classes.dir}"/>
+		<delete dir="${deploy.dir}"/>
+	</target>
+	
+	<target name="version" depends="init"
+		description="Update the version file and tag the CVS build">
+		
+		<cvs command="update ${version.file}" failonerror="true"/>
+		
+		<propertyfile file="${version.file}"
+			comment="OpenCSV Version Build Properties File.">
+			<entry key="build.number" type="int" default="0" operation="+"
+				pattern="000"/>
+			<entry key="build.release.minor" type="int"
+				value="${build.release.minor}" pattern="0"/>
+			<entry key="build.release.major" type="int"
+				value="${build.release.major}" pattern="0"/>
+			<entry key="build.date" type="date" value="now"/>
+			<entry key="build.user" type="string" value="${user.name}"/>
+		</propertyfile>
+		
+		<cvs command="commit -m Release ${version.file}" failonerror="true"/>
+		
+		<property file="${version.file}"/>
+		
+		<echo>CVS Tag is ${build.version.tag}. Version is ${build.version}</echo>
+		
+		<cvs command="tag -R ${build.version.tag}" failonerror="true"/>
+		
+	</target>
+	
+	<target name="javadoc" depends="init"
+		description="Generate javadoc for the package">
+			
+		<javadoc packagenames="au.com.bytecode.opencsv.*" sourcepath="src"
+			defaultexcludes="yes" destdir="${doc.dir}/api" author="true" version="true"
+			use="true" windowtitle="opencsv API ${build.version.brief}">
+			<doctitle><![CDATA[<h1>opencsv</h1>]]>
+			</doctitle>
+			<bottom><![CDATA[<i>Copyright &#169; 2005-2006 <a href="http://www.bytecode.com.au"/>Bytecode Pty Ltd.</a></i>]]>
+			</bottom>
+			
+		</javadoc>
+		
+	</target>
+	
+</project>

@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>opencsv - an open source csv parser for Java</title>
+        <style type="text/css">
+
+/* CSS Design Ideas from http://glish.com/css/9.asp */        
+
+body {
+	margin: 0px 0px 0px 0px;
+	font: 12px/1.2 verdana, helvetica, arial, sans-serif;
+	background-color: #ddd;
+}
+
+pre {
+	color: blue;
+}
+
+#leftcontent {
+	float: left;
+	width: 80%;
+	background: #fff;
+	border-right: 2px solid #000;
+	border-bottom: 2px solid #000;
+	margin-right: 15px;
+	padding-bottom: 20px;
+}
+
+#rightcontent {
+	font-size: small;
+}
+
+ul {
+  /*margin: 0px*/
+  }
+
+li {
+	margin-left: 15px;
+}
+
+p, h1, pre {
+	margin: 0px 30px 10px 30px;
+}
+
+h1 {
+	padding-top: 10px;
+	font-size: 18px;
+	margin-left: 5px;
+}
+
+h3 {
+	font-size: 15px;
+	margin-left: 5px;
+}
+
+
+</style>
+    </head>
+    <body>
+        
+        <div id="leftcontent">
+            <h1>opencsv</h1>
+            <p> 
+                An Open Source Java csv library under commercial-friendly license...
+                committed to changing the world, one comma at a time... 
+            </p>
+            
+            <h3>What is opencsv?</h3>
+            <p>
+                opencsv is a very simple csv (comma-separated values) parser library for
+                Java. It was developed because all of current csv parsers I've come across
+                don't have commercial-friendly licenses.
+            </p>
+            
+            <h3>Where can I get it?</h3>
+            <p>
+                Source and binaries are available from 
+                <a href="http://www.sf.net/projects/opencsv">Sourceforge</a>.
+            </p>
+            
+            <h3>What features does opencsv support?</h3>
+            <p>
+                opencsv supports all the basic csv-type things you're likely to want to do:
+            </p>
+            <p>
+            <ul>
+                <li>Arbitrary numbers of values per line</li>
+                <li>Ignoring commas in quoted elements</li>
+                <li>Handling quoted entries with embedded carriage returns (ie entries
+                    that span multiple lines)</li>
+                <li>Configurable separator and quote characters (or use sensible defaults)</li>
+                <li>Read all the entries at once, or use an Iterator style model</li>
+                <li>Creating csv files from String[] (ie. automatic escaping of embedded quote chars)</li>
+            </ul>
+            </p>
+            
+            <h3>How do I read and parse a CSV file?</h3>
+            <p>
+                If you want to use an Iterator style pattern, you might do something like
+                this:
+            </p>
+            
+            <pre>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"));
+    String [] nextLine;
+    while ((nextLine = reader.readNext()) != null) {
+        // nextLine[] is an array of values from the line
+        System.out.println(nextLine[0] + nextLine[1] + "etc...");
+    }
+            </pre>
+            <p>
+                Or, if you might just want to slurp the whole lot into a <code>List</code>, just call
+                <code>readAll()</code>... 
+            </p>
+            
+            <pre>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"));
+    List myEntries = reader.readAll();
+            </pre>
+            <p>
+                which will give you a <code>List</code> of <code>String[]</code> that you
+                can iterate over. If all else fails, check out the <a href="api/index.html">Javadoc</a>.
+            </p>
+            
+            <h3>Can I use my own separators and quote characters?</h3>
+            <p>
+                Yes. There are constructors that cater for supplying your own
+                separator and quote characters. Say you're using a tab for your
+                separator, you can do something like this:
+            </p>
+                <pre>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t');                   
+                </pre>
+            <p>
+                And if you single quoted your escaped characters rather than double
+                quote them, you can use the three arg constructor:
+            </p>
+            <pre>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t', '\'');
+            </pre>
+            <p>
+            	You may also skip the first few lines of the file if you know that
+            	the content doesn't start till later in the file. So, for example,
+            	you can skip the first two lines by doing:
+            </p>
+            <pre>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t', '\'', 2);
+            </pre>            
+            <h3>Can I write csv files with opencsv?</h3>
+            <p>
+                Yes. There is a CSVWriter in the same package that follows the same
+                semantics as the CSVReader. For example, to write a tab separated file:
+            </p>
+                <pre>
+     CSVWriter writer = new CSVWriter(new FileWriter("yourfile.csv"), '\t');
+     // feed in your array (or convert your data to an array)
+     String[] entries = "first#second#third".split("#");
+     writer.writeNext(entries);
+	writer.close();
+                </pre>
+                <p>
+                	If you'd prefer to use your own quote characters, you may use the
+                	three arg version of the constructor,  which takes a quote
+                	character (or feel free to pass in CSVWriter.NO_QUOTE_CHARACTER).
+                </p>
+                <p>
+                	You can also customise the line terminators used in the generated
+                	file (which is handy when you're exporting from your Linux web
+                	application to Windows clients). There is a constructor argument
+                	for this purpose.
+                </p>
+            <h3>Can I dump out SQL tables to CSV?</h3>
+            <p>
+            	Yes you can. Sean Sullivan added a neat feature to CSVWriter so you 
+            	can pass <code>writeAll()</code> a ResultSet. 
+            </p>
+            <pre>
+            	java.sql.ResultSet myResultSet = ....
+            	writer.writeAll(myResultSet, includeHeaders);
+            </pre>
+            
+            <h3>Can I use opencsv in my commercial applications?</h3>
+            <p>
+                Yes. opencsv is available under a commercial-friendly Apache 2.0 license.
+                You are free to include it in your commericial applications without any fee
+                or charge, and you are free to modify it to suit your circumstances. To find
+                out more details of the license, read the <a
+                    href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0
+                license agreement</a>.
+            </p>
+            
+            <h3>Can I get the source? More example code?</h3>
+            <p>
+                Yes. The 
+                <a href="http://sourceforge.net/project/showfiles.php?group_id=148905&package_id=164539">download</a>
+                from the SourceForge page includes the full source in the
+                <code>/src</code> directory. It's one file, so go crazy. There is also a
+                sample addressbook csv reader in the <code>/examples</code> directory.
+                And for extra marks, there's a JUnit test suite in the <code>/test</code>
+                directory.
+            </p>
+            
+            <h3>Who maintains opencsv?</h3>
+            <p>
+                opencsv was developed in a couple of hours by Glen Smith. You can read his <a
+                    href="http://blogs.bytecode.com.au/glen">blog</a> for more info 
+                and contact details.
+            </p>
+            
+            <p>
+                If you've found a bug, you can report it on the <a
+                    href="http://www.sf.net/projects/opencsv">project page</a> at
+                Sourceforge. Please post a sample file that demonstrates your issue.
+                For bonus marks, post a patch too. :-)
+            </p>
+        </div>
+        
+        <div id="rightcontent"> 
+            <p>
+                <br/>
+                <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=148905&type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
+            </p>
+            <p>
+                Links:
+            </p>
+            <ul>
+                <li><a href="http://sourceforge.net/project/showfiles.php?group_id=148905&package_id=164539">Download page</a>
+                </li>
+                <li><a href="api/index.html">Javadoc</a>
+                </li>
+            </ul>
+            <p>
+                Author Info:
+            </p>
+            <ul>
+                <li><a href="http://blogs.bytecode.com.au/glen">Glen's blog</a>
+                </li>
+            </ul> 
+
+        </div>
+        
+    </body>
+</html>
