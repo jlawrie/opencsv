@@ -24,6 +24,7 @@ limitations under the License.
 		<property name="doc.dir" location="doc"/>
 		<property name="classes.dir" location="build/classes"/>
 		<property name="test.classes.dir" location="build/test.classes"/>
+		<property name="reports.dir" location="build/reports"/>
 		<property name="deploy.dir" location="deploy"/>
 		<property name="lib.dir" location="lib"/>
 		<property name="app.name" value="opencsv"/>
@@ -125,6 +126,27 @@ limitations under the License.
 			
 		</javac>
 		
+		<mkdir dir="${reports.dir}/junit/xml"/>
+		
+		<junit printsummary="yes" haltonerror="no" haltonfailure="no" fork="true">
+			
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar"/>
+				</fileset>
+				<pathelement location="${classes.dir}"/>
+				<pathelement location="${test.classes.dir}"/>
+			</classpath>	
+			
+			<formatter type="plain" usefile="false"/>
+			<formatter type="xml" usefile="true"/>
+			<batchtest todir="${reports.dir}/junit/xml">
+				<fileset dir="${test.classes.dir}" includes="**/*Test.class"/>
+			</batchtest>
+					
+		</junit>
+		
+		<!--
 		<java classname="au.com.bytecode.opencsv.CSVReaderTest">
 			<classpath>
 				<pathelement location="${lib.dir}/junit.jar"/>
@@ -132,6 +154,19 @@ limitations under the License.
 				<pathelement location="${test.classes.dir}"/>
 			</classpath>
 		</java>
+		-->
+		
+	</target>
+	
+	<target name="report" depends="test" description="Generate JUnit report files">
+	
+		<mkdir dir="${reports.dir}/junit/html"/>
+		<junitreport todir="${reports.dir}/junit/html">
+		  <fileset dir="${reports.dir}/junit/xml">
+		    <include name="TEST-*.xml"/>
+		  </fileset>
+		  <report format="frames" todir="${reports.dir}/junit/html"/>
+		</junitreport>
 		
 	</target>
 	
@@ -176,7 +211,7 @@ limitations under the License.
 			use="true" windowtitle="opencsv API ${build.version.brief}">
 			<doctitle><![CDATA[<h1>opencsv</h1>]]>
 			</doctitle>
-			<bottom><![CDATA[<i>Copyright &#169; 2005-2006 <a href="http://www.bytecode.com.au"/>Bytecode Pty Ltd.</a></i>]]>
+			<bottom><![CDATA[<i>Copyright &#169; 2005-2007 <a href="http://www.bytecode.com.au"/>Bytecode Pty Ltd.</a></i>]]>
 			</bottom>
 			
 		</javadoc>
