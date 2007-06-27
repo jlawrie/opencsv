@@ -48,10 +48,12 @@ public class CSVWriter {
 
     private char quotechar;
     
+    private char escapechar;
+    
     private String lineEnd;
 
     /** The character used for escaping quotes. */
-    public static final char ESCAPE_CHARACTER = '"';
+    public static final char DEFAULT_ESCAPE_CHARACTER = '"';
 
     /** The default separator to use if none is supplied to the constructor. */
     public static final char DEFAULT_SEPARATOR = ',';
@@ -64,6 +66,9 @@ public class CSVWriter {
     
     /** The quote constant to use when you wish to suppress all quoting. */
     public static final char NO_QUOTE_CHARACTER = '\u0000';
+    
+    /** The escape constant to use when you wish to suppress all escaping. */
+    public static final char NO_ESCAPE_CHARACTER = '\u0000';
     
     /** Default line terminator uses platform encoding. */
     public static final String DEFAULT_LINE_END = "\n";
@@ -109,9 +114,26 @@ public class CSVWriter {
      *            the character to use for quoted elements
      */
     public CSVWriter(Writer writer, char separator, char quotechar) {
-    	this(writer, separator, quotechar, "\n");
+    	this(writer, separator, quotechar, DEFAULT_ESCAPE_CHARACTER);
     }
 
+    /**
+     * Constructs CSVWriter with supplied separator and quote char.
+     *
+     * @param writer
+     *            the writer to an underlying CSV source.
+     * @param separator
+     *            the delimiter to use for separating entries
+     * @param quotechar
+     *            the character to use for quoted elements
+     * @param escapechar
+     *            the character to use for escaping quotechars or escapechars
+     */
+    public CSVWriter(Writer writer, char separator, char quotechar, char escapechar) {
+        this(writer, separator, quotechar, escapechar, DEFAULT_LINE_END);
+    }
+    
+    
     /**
      * Constructs CSVWriter with supplied separator and quote char.
      *
@@ -125,10 +147,31 @@ public class CSVWriter {
      * 			  the line feed terminator to use
      */
     public CSVWriter(Writer writer, char separator, char quotechar, String lineEnd) {
+        this(writer, separator, quotechar, DEFAULT_ESCAPE_CHARACTER, lineEnd);
+    }   
+    
+    
+    
+    /**
+     * Constructs CSVWriter with supplied separator, quote char, escape char and line ending.
+     *
+     * @param writer
+     *            the writer to an underlying CSV source.
+     * @param separator
+     *            the delimiter to use for separating entries
+     * @param quotechar
+     *            the character to use for quoted elements
+     * @param escapechar
+     *            the character to use for escaping quotechars or escapechars
+     * @param lineEnd
+     * 			  the line feed terminator to use
+     */
+    public CSVWriter(Writer writer, char separator, char quotechar, char escapechar, String lineEnd) {
         this.rawWriter = writer;
         this.pw = new PrintWriter(writer);
         this.separator = separator;
         this.quotechar = quotechar;
+        this.escapechar = escapechar;
         this.lineEnd = lineEnd;
     }
     
@@ -302,6 +345,10 @@ public class CSVWriter {
      *            entry.
      */
     public void writeNext(String[] nextLine) {
+    	
+    	if (nextLine == null)
+    		return;
+    	
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < nextLine.length; i++) {
 
@@ -316,10 +363,10 @@ public class CSVWriter {
             	sb.append(quotechar);
             for (int j = 0; j < nextElement.length(); j++) {
                 char nextChar = nextElement.charAt(j);
-                if (nextChar == quotechar) {
-                    sb.append(ESCAPE_CHARACTER).append(nextChar);
-                } else if (nextChar == ESCAPE_CHARACTER) {
-                    sb.append(ESCAPE_CHARACTER).append(nextChar);
+                if (escapechar != NO_ESCAPE_CHARACTER && nextChar == quotechar) {
+                	sb.append(escapechar).append(nextChar);
+                } else if (escapechar != NO_ESCAPE_CHARACTER && nextChar == escapechar) {
+                	sb.append(escapechar).append(nextChar);
                 } else {
                     sb.append(nextChar);
                 }
@@ -332,6 +379,17 @@ public class CSVWriter {
         pw.write(sb.toString());
 
     }
+
+    /**
+     * Flush underlying stream to writer.
+     * 
+     * @throws IOException if bad things happen
+     */
+    public void flush() throws IOException {
+
+        pw.flush();
+
+    } 
 
     /**
      * Close the underlying stream writer flushing any buffered content.

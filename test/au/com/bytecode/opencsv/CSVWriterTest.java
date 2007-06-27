@@ -154,6 +154,23 @@ public class CSVWriterTest extends TestCase {
 
     }
 
+    public void testAlternateEscapeChar() {
+        String[] line = {"Foo","bar's"};
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw,CSVWriter.DEFAULT_SEPARATOR,CSVWriter.DEFAULT_QUOTE_CHARACTER,'\'');
+        csvw.writeNext(line);
+        assertEquals("\"Foo\",\"bar''s\"\n",sw.toString());
+    }
+    
+    public void testNoQuotingNoEscaping() {
+        String[] line = {"\"Foo\",\"Bar\""};
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw,CSVWriter.DEFAULT_SEPARATOR,CSVWriter.NO_QUOTE_CHARACTER,CSVWriter.NO_ESCAPE_CHARACTER);
+        csvw.writeNext(line);
+        assertEquals("\"Foo\",\"Bar\"\n",sw.toString());
+    }
+    
+
     public void testNestedQuotes(){
         String[] data = new String[]{"\"\"", "test"};
         String oracle = new String("\"\"\"\"\"\",\"test\"\n");
