@@ -5,7 +5,7 @@
         <title>opencsv - an open source csv parser for Java</title>
         <style type="text/css">
 
-/* CSS Design Ideas from http://glish.com/css/9.asp */        
+/* CSS Design Ideas from http://glish.com/css/9.asp */
 
 body {
 	margin: 0px 0px 0px 0px;
@@ -58,27 +58,27 @@ h3 {
 </style>
     </head>
     <body>
-        
+
         <div id="leftcontent">
             <h1>opencsv</h1>
-            <p> 
+            <p>
                 An Open Source Java csv library under commercial-friendly license...
-                committed to changing the world, one comma at a time... 
+                committed to changing the world, one comma at a time...
             </p>
-            
+
             <h3>What is opencsv?</h3>
             <p>
                 opencsv is a very simple csv (comma-separated values) parser library for
                 Java. It was developed because all of current csv parsers I've come across
                 don't have commercial-friendly licenses.
             </p>
-            
+
             <h3>Where can I get it?</h3>
             <p>
-                Source and binaries are available from 
+                Source and binaries are available from
                 <a href="http://www.sf.net/projects/opencsv">Sourceforge</a>.
             </p>
-            
+
             <h3>What features does opencsv support?</h3>
             <p>
                 opencsv supports all the basic csv-type things you're likely to want to do:
@@ -94,13 +94,13 @@ h3 {
                 <li>Creating csv files from String[] (ie. automatic escaping of embedded quote chars)</li>
             </ul>
             </p>
-            
+
             <h3>How do I read and parse a CSV file?</h3>
             <p>
                 If you want to use an Iterator style pattern, you might do something like
                 this:
             </p>
-            
+
             <pre>
     CSVReader reader = new CSVReader(new FileReader("yourfile.csv"));
     String [] nextLine;
@@ -111,9 +111,9 @@ h3 {
             </pre>
             <p>
                 Or, if you might just want to slurp the whole lot into a <code>List</code>, just call
-                <code>readAll()</code>... 
+                <code>readAll()</code>...
             </p>
-            
+
             <pre>
     CSVReader reader = new CSVReader(new FileReader("yourfile.csv"));
     List myEntries = reader.readAll();
@@ -122,7 +122,7 @@ h3 {
                 which will give you a <code>List</code> of <code>String[]</code> that you
                 can iterate over. If all else fails, check out the <a href="api/index.html">Javadoc</a>.
             </p>
-            
+
             <h3>Can I use my own separators and quote characters?</h3>
             <p>
                 Yes. There are constructors that cater for supplying your own
@@ -130,7 +130,7 @@ h3 {
                 separator, you can do something like this:
             </p>
                 <pre>
-    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t');                   
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t');
                 </pre>
             <p>
                 And if you single quoted your escaped characters rather than double
@@ -146,7 +146,7 @@ h3 {
             </p>
             <pre>
     CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t', '\'', 2);
-            </pre>            
+            </pre>
             <h3>Can I write csv files with opencsv?</h3>
             <p>
                 Yes. There is a CSVWriter in the same package that follows the same
@@ -172,14 +172,38 @@ h3 {
                 </p>
             <h3>Can I dump out SQL tables to CSV?</h3>
             <p>
-            	Yes you can. Sean Sullivan added a neat feature to CSVWriter so you 
-            	can pass <code>writeAll()</code> a ResultSet. 
+            	Yes you can. Sean Sullivan added a neat feature to CSVWriter so you
+            	can pass <code>writeAll()</code> a ResultSet.
             </p>
             <pre>
-            	java.sql.ResultSet myResultSet = ....
-            	writer.writeAll(myResultSet, includeHeaders);
+      java.sql.ResultSet myResultSet = ....
+      writer.writeAll(myResultSet, includeHeaders);
             </pre>
-            
+
+            <h3>Is there a way to bind my CSV file to a list of Javabeans?</h3>
+            <p>
+            	Yes there is. Kyle Miller added a new set of classes to allow you to bind
+            	a CSV file to a list of JavaBeans based on column name, column position, or a
+            	custom mapping strategy. You can find the new classes in
+            	the <code>au.com.bytecode.opencsv.bean</code> package.
+            	Here's how you can map to a java bean based on
+            	the field positions in your CSV file:
+            </p>
+            <pre>
+      ColumnPositionMappingStrategy strat = new ColumnPositionMappingStrategy();
+      strat.setType(YourOrderBean.class);
+      String[] columns = new String[] {"name", "orderNumber", "id"}; // the fields to bind do in your JavaBean
+      strat.setColumnMapping(columns);
+
+      CsvToBean csv = new CsvToBean();
+      List list = csv.parse(strat, yourReader);
+            </pre>
+            <p>
+            For more detailed examples, check out the test cases for each of the available
+            mapping strategies under the /test/au/com/bytecode/opencsv/bean/.
+            </p>
+
+
             <h3>Can I use opencsv in my commercial applications?</h3>
             <p>
                 Yes. opencsv is available under a commercial-friendly Apache 2.0 license.
@@ -189,10 +213,10 @@ h3 {
                     href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0
                 license agreement</a>.
             </p>
-            
+
             <h3>Can I get the source? More example code?</h3>
             <p>
-                Yes. The 
+                Yes. The
                 <a href="http://sourceforge.net/project/showfiles.php?group_id=148905&package_id=164539">download</a>
                 from the SourceForge page includes the full source in the
                 <code>/src</code> directory. It's one file, so go crazy. There is also a
@@ -200,14 +224,14 @@ h3 {
                 And for extra marks, there's a JUnit test suite in the <code>/test</code>
                 directory.
             </p>
-            
+
             <h3>Who maintains opencsv?</h3>
             <p>
                 opencsv was developed in a couple of hours by Glen Smith. You can read his <a
-                    href="http://blogs.bytecode.com.au/glen">blog</a> for more info 
+                    href="http://blogs.bytecode.com.au/glen">blog</a> for more info
                 and contact details.
             </p>
-            
+
             <p>
                 If you've found a bug, you can report it on the <a
                     href="http://www.sf.net/projects/opencsv">project page</a> at
@@ -215,8 +239,8 @@ h3 {
                 For bonus marks, post a patch too. :-)
             </p>
         </div>
-        
-        <div id="rightcontent"> 
+
+        <div id="rightcontent">
             <p>
                 <br/>
                 <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=148905&type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
@@ -236,9 +260,9 @@ h3 {
             <ul>
                 <li><a href="http://blogs.bytecode.com.au/glen">Glen's blog</a>
                 </li>
-            </ul> 
+            </ul>
 
         </div>
-        
+
     </body>
 </html>
