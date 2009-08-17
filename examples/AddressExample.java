@@ -35,7 +35,7 @@ public class AddressExample {
 		
 		// Try writing it back out as CSV to the console
 		CSVReader reader2 = new CSVReader(new FileReader(ADDRESS_FILE));
-		List allElements = reader2.readAll();
+		List<String[]> allElements = reader2.readAll();
 		StringWriter sw = new StringWriter();
 		CSVWriter writer = new CSVWriter(sw);
 		writer.writeAll(allElements);

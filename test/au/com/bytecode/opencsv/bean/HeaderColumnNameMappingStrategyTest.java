@@ -32,16 +32,31 @@ public class HeaderColumnNameMappingStrategyTest extends TestCase {
         String s = "name,orderNumber,num\n" +
                 "kyle,abc123456,123\n" +
                 "jimmy,def098765,456";
-        HeaderColumnNameMappingStrategy strat = new HeaderColumnNameMappingStrategy();
+        HeaderColumnNameMappingStrategy<TestBean> strat = new HeaderColumnNameMappingStrategy<TestBean>();
         strat.setType(TestBean.class);
-        CsvToBean csv = new CsvToBean();
-        List list = csv.parse(strat, new StringReader(s));
+        CsvToBean<TestBean> csv = new CsvToBean<TestBean>();
+        List<TestBean> list = csv.parse(strat, new StringReader(s));
         assertNotNull(list);
         assertTrue(list.size() == 2);
-        TestBean bean = (TestBean)list.get(0);
+        TestBean bean = list.get(0);
         assertEquals("kyle", bean.getName());
         assertEquals("abc123456", bean.getOrderNumber());
         assertEquals(123, bean.getNum());
     }
 
+    public void testParseWithSpacesInHeader() {
+        String s = "name, orderNumber, num\n" +
+                "kyle, abc123456, 123\n" +
+                "jimmy, def098765,456";
+        HeaderColumnNameMappingStrategy<TestBean> strat = new HeaderColumnNameMappingStrategy<TestBean>();
+        strat.setType(TestBean.class);
+        CsvToBean<TestBean> csv = new CsvToBean<TestBean>();
+        List<TestBean> list = csv.parse(strat, new StringReader(s));
+        assertNotNull(list);
+        assertTrue(list.size() == 2);
+        TestBean bean = (TestBean) list.get(0);
+        assertEquals("kyle", bean.getName());
+        assertEquals("abc123456", bean.getOrderNumber());
+        assertEquals(123, bean.getNum());
+    }
 }

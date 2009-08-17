@@ -18,7 +18,6 @@ package au.com.bytecode.opencsv;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -31,7 +30,7 @@ public class CSVReaderTest extends TestCase {
 	 * Setup the test.
 	 */
 	protected void setUp() throws Exception {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
 		sb.append("a,b,c").append("\n");   // standard case
 		sb.append("a,\"b,b,b\",c").append("\n");  // quoted elements
 		sb.append(",,").append("\n"); // empty elements
@@ -94,10 +93,7 @@ public class CSVReaderTest extends TestCase {
 	 *             if the reader fails.
 	 */
 	public void testParseAll() throws IOException {
-
-		List allElements = csvr.readAll();
-		assertEquals(7, allElements.size());
-
+		assertEquals(7, csvr.readAll().size());
 	}
 	
 	/**
@@ -107,7 +103,7 @@ public class CSVReaderTest extends TestCase {
 	 */
 	public void testOptionalConstructors() throws IOException {
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
 		sb.append("a\tb\tc").append("\n");   // tab separated case
 		sb.append("a\t'b\tb\tb'\tc").append("\n");  // single quoted elements
 		CSVReader c = new CSVReader(new StringReader(sb.toString()), '\t', '\'');
@@ -128,7 +124,7 @@ public class CSVReaderTest extends TestCase {
 	 */
 	public void testSkippingLines() throws IOException {
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
 		sb.append("Skip this line\t with tab").append("\n");   // should skip this
 		sb.append("And this line too").append("\n");   // and this
 		sb.append("a\t'b\tb\tb'\tc").append("\n");  // single quoted elements
@@ -147,7 +143,7 @@ public class CSVReaderTest extends TestCase {
 	 */
 	public void testParsedLineWithInternalQuota() throws IOException {
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
 
 		sb.append("a,123\"4\"567,c").append("\n");// a,123"4",c
 
@@ -156,11 +152,256 @@ public class CSVReaderTest extends TestCase {
 		String[] nextLine = c.readNext();
 		assertEquals(3, nextLine.length);
 
-		System.out.println(nextLine[1]);
 		assertEquals("123\"4\"567", nextLine[1]);
 
 	}
+	
+	/**
+	 * Test a normal non quoted line with three elements
+	 * @throws IOException
+	 */
+	public void testNormalParsedLine() throws IOException {
 
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("a,1234567,c").append("\n");// a,1234,c
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+
+		assertEquals("a", nextLine[0]);
+		assertEquals("1234567", nextLine[1]);
+		assertEquals("c", nextLine[2]);
+
+	}
+
+	/**
+	 * Test a line where one of the elements is a single Double quote "
+	 * @throws IOException
+	 */
+	public void testADoubleQuoteAsDataElement() throws IOException {
+
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("a,\"\"\"\",c").append("\n");// a,"""",c
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+		
+		assertEquals("a", nextLine[0]);
+		assertEquals(1, nextLine[1].length());
+		assertEquals("\"", nextLine[1]);
+		assertEquals("c", nextLine[2]);
+
+	}
+	
+	/**
+	 * Test a line where one of the elements is a single Double quote "
+	 * @throws IOException
+	 */
+	public void testEscapedDoubleQuoteAsDataElement() throws IOException {
+		 
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("\"test\",\"this,test,is,good\",\"\\\"test\\\"\",\"\\\"quote\\\"\"").append("\n"); // "test","this,test,is,good","\"test\",\"quote\""
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(4, nextLine.length);
+		
+		assertEquals("test", nextLine[0]);
+		assertEquals("this,test,is,good", nextLine[1]);
+		assertEquals("\"test\"", nextLine[2]);
+		assertEquals("\"quote\"", nextLine[3]);
+
+	}
+	
+	/**
+	 * Same as testADoubleQuoteAsDataElement but I changed the quotechar to a 
+	 * single quote. 
+	 * @throws IOException
+	 */
+	public void testASingleQuoteAsDataElement() throws IOException {
+
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("a,'''',c").append("\n");// a,',c
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()), ',', '\'');
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+		
+		assertEquals("a", nextLine[0]);
+		assertEquals(1, nextLine[1].length());
+		assertEquals("\'", nextLine[1]);
+		assertEquals("c", nextLine[2]);
+
+	}
+	
+	/**
+	 * Same as testADoubleQuoteAsDataElement but I changed the quotechar to a 
+	 * single quote.  Also the middle field is empty. 
+	 * @throws IOException
+	 */
+	public void testASingleQuoteAsDataElementWithEmptyField() throws IOException {
+
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("a,'',c").append("\n");// a,,c
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()), ',', '\'');
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+		
+		assertEquals("a", nextLine[0]);
+		assertEquals(0, nextLine[1].length());
+		assertEquals("", nextLine[1]);
+		assertEquals("c", nextLine[2]);
+
+	}
+	
+	/**
+	 * Test issue 2263439 where an escaped quote was causing the parse to fail.  
+	 * 
+	 * Special thanks to Chris Morris for fixing this (id 1979054)
+	 * @throws IOException 
+	 * 
+	 */
+	public void testIssue2263439() throws IOException {
+		
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("865,0,'AmeriKKKa\\'s_Most_Wanted','',294,0,0,0.734338696798625,'20081002052147',242429208,18448").append("\n");
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()), ',', '\'');
+
+		String[] nextLine = c.readNext();
+
+		assertEquals(11, nextLine.length);
+		
+		assertEquals("865", nextLine[0]);
+		assertEquals("0", nextLine[1]);
+		assertEquals("AmeriKKKa's_Most_Wanted", nextLine[2]);
+		assertEquals("", nextLine[3]);
+		assertEquals("18448", nextLine[10]);
+		
+	}
+	
+	public void testEscapedQuote() throws IOException {
+
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("a,\"123\\\"4567\",c").append("\n");// a,123"4",c
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+
+		assertEquals("123\"4567", nextLine[1]);
+
+	}
+
+	public void testEscapedEscape() throws IOException {
+
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("a,\"123\\\\4567\",c").append("\n");// a,123"4",c
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+
+		assertEquals("123\\4567", nextLine[1]);
+
+	}
+
+	
+	/**
+	 * Test a line where one of the elements is two single quotes and the 
+	 * quote character is the default double quote.  The expected result is two 
+	 * single quotes. 
+	 * @throws IOException
+	 */
+	public void testSingleQuoteWhenDoubleQuoteIsQuoteChar() throws IOException {
+
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("a,'',c").append("\n");// a,'',c
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+
+		assertEquals("a", nextLine[0]);
+		assertEquals(2, nextLine[1].length());
+		assertEquals("''", nextLine[1]);
+		assertEquals("c", nextLine[2]);
+
+	}
+	
+	/**
+	 * Test a normal line with three elements and all elements are quoted
+	 * @throws IOException
+	 */
+	public void testQuotedParsedLine() throws IOException {
+
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("\"a\",\"1234567\",\"c\"").append("\n"); // "a","1234567","c"
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+
+		assertEquals("a", nextLine[0]);
+		assertEquals(1, nextLine[0].length());
+		
+		assertEquals("1234567", nextLine[1]);
+		assertEquals("c", nextLine[2]);
+
+	}
+	
+	/**
+	 * Test issue 2726363
+	 * 
+	 * Data given:
+	 * 
+	 *	"804503689","London",""London""shop","address","116.453182","39.918884"
+	 *	"453074125","NewYork","brief","address"","121.514683","31.228511"
+	 */
+	
+	public void testIssue2726363()throws IOException {
+
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("\"804503689\",\"London\",\"\"London\"shop\",\"address\",\"116.453182\",\"39.918884\"").append("\n"); 
+	
+		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+		String[] nextLine = c.readNext();
+		assertEquals(6, nextLine.length);
+
+
+		assertEquals("804503689", nextLine[0]);
+		assertEquals("London", nextLine[1]);
+		assertEquals("\"London\"shop", nextLine[2]);
+		assertEquals("address", nextLine[3]);
+		assertEquals("116.453182", nextLine[4]);
+		assertEquals("39.918884", nextLine[5]);
+
+	}
+	
 	/**
 	 * The Test Runner for commandline use.
 	 * 

@@ -18,15 +18,15 @@ import java.util.Map;
  limitations under the License.
  */
 
-public class HeaderColumnNameTranslateMappingStrategy extends HeaderColumnNameMappingStrategy {
-    private Map columnMapping = new HashMap();
+public class HeaderColumnNameTranslateMappingStrategy<T> extends HeaderColumnNameMappingStrategy<T> {
+    private Map<String, String> columnMapping = new HashMap<String, String>();
     protected String getColumnName(int col) {
-        return (String) getColumnMapping().get(header[col]);
+        return getColumnMapping().get(header[col]);
     }
-    public Map getColumnMapping() {
+    public Map<String, String> getColumnMapping() {
         return columnMapping;
     }
-    public void setColumnMapping(Map columnMapping) {
+    public void setColumnMapping(Map<String, String> columnMapping) {
         this.columnMapping = columnMapping;
     }
 }

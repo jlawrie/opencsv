@@ -85,7 +85,7 @@ public class CSVWriterTest extends TestCase {
      */
     public void testParseAll() throws IOException {
 
-        List allElements = new ArrayList();
+        List<String[]> allElements = new ArrayList<String[]>();
         String[] line1 = "Name#Phone#Email".split("#");
         String[] line2 = "Glen#1234#glen@abcd.com".split("#");
         String[] line3 = "John#5678#john@efgh.com".split("#");
@@ -213,7 +213,7 @@ public class CSVWriterTest extends TestCase {
             fail();
         }
 
-        StringBuffer fileContents = new StringBuffer();
+        StringBuilder fileContents = new StringBuilder(CSVWriter.INITIAL_STRING_SIZE);
         try{
             int ch;
             while((ch = in.read()) != -1){

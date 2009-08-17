@@ -1,7 +1,7 @@
 #OpenCSV Version Build Properties File.
 #Wed Aug 23 06:33:41 EST 2006
-build.release.major=1
+build.release.major=2
 build.number=001
 build.user=Glen
-build.release.minor=8
-build.date=2007/07/30 12\:57
+build.release.minor=0
+build.date=2009/08/16 10\:52

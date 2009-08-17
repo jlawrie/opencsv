@@ -4,6 +4,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -23,10 +25,10 @@ import au.com.bytecode.opencsv.CSVReader;
  limitations under the License.
  */
 
-public class HeaderColumnNameMappingStrategy implements MappingStrategy {
+public class HeaderColumnNameMappingStrategy<T> implements MappingStrategy<T> {
     protected String[] header;
-    protected PropertyDescriptor[] descriptors;
-    protected Class type;
+    protected Map<String, PropertyDescriptor> descriptorMap = null;
+    protected Class<T> type;
 
     public void captureHeader(CSVReader reader) throws IOException {
         header = reader.readNext();
@@ -41,28 +43,39 @@ public class HeaderColumnNameMappingStrategy implements MappingStrategy {
         return (null != header && col < header.length) ? header[col] : null;
     }
     protected PropertyDescriptor findDescriptor(String name) throws IntrospectionException {
-        if (null == descriptors) descriptors = loadDescriptors(getType()); //lazy load descriptors
-        for (int i = 0; i < descriptors.length; i++) {
-            PropertyDescriptor desc = descriptors[i];
-            if (matches(name, desc)) return desc; // TODO: (Kyle) do null/blank check
-        }
-        return null;
+        if (null == descriptorMap) descriptorMap = loadDescriptorMap(getType()); //lazy load descriptors
+        return descriptorMap.get(name.toUpperCase().trim());
     }
     protected boolean matches(String name, PropertyDescriptor desc) {
-        return desc.getName().equals(name);
+        return desc.getName().equals(name.trim());
     }
-    protected PropertyDescriptor[] loadDescriptors(Class cls) throws IntrospectionException {
+    
+    protected Map<String, PropertyDescriptor> loadDescriptorMap(Class<T> cls) throws IntrospectionException
+    {
+       Map<String, PropertyDescriptor> map = new HashMap<String, PropertyDescriptor>();
+       
+       PropertyDescriptor[] descriptors;
+       descriptors = loadDescriptors(getType());
+       for (PropertyDescriptor descriptor : descriptors)
+       {
+          map.put(descriptor.getName().toUpperCase().trim(), descriptor);
+       }
+       
+       return map;
+    }
+    
+    private PropertyDescriptor[] loadDescriptors(Class<T> cls) throws IntrospectionException {
         BeanInfo beanInfo = Introspector.getBeanInfo(cls);
         return beanInfo.getPropertyDescriptors();
     }
-    public Object createBean() throws InstantiationException, IllegalAccessException {
+    public T createBean() throws InstantiationException, IllegalAccessException {
         return type.newInstance();
     }
-    public Class getType() {
+    public Class<T> getType() {
         return type;
     }
 
-    public void setType(Class type) {
+    public void setType(Class<T> type) {
         this.type = type;
     }
 }
