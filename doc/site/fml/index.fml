@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs xmlns="http://maven.apache.org/FML/1.0.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
+  title="Frequently Asked Questions"
+  toplink="false">
+
+  <part id="general">
+
+            <title>General</title>
+            <faq id="what-is-opencsv">
+				<question>What is opencsv?</question>
+            	<answer>
+                opencsv is a very simple csv (comma-separated values) parser library for
+                Java. It was developed because all of current csv parsers I've come across
+                don't have commercial-friendly licenses.
+            	</answer>
+			</faq>
+
+            <faq id="where-can-I-get-it">
+				<question>Where can I get it?</question>
+            	<answer>
+                	Source and binaries are available from
+                <a href="http://www.sf.net/projects/opencsv">Sourceforge</a>.
+            </answer></faq>
+
+            <faq id="what-features">
+			<question>What features does opencsv support?</question>
+            <answer>
+                opencsv supports all the basic csv-type things you're likely to want to do:
+    
+            <ul>
+                <li>Arbitrary numbers of values per line</li>
+                <li>Ignoring commas in quoted elements</li>
+                <li>Handling quoted entries with embedded carriage returns (ie entries
+                    that span multiple lines)</li>
+                <li>Configurable separator and quote characters (or use sensible defaults)</li>
+                <li>Read all the entries at once, or use an Iterator style model</li>
+                <li>Creating csv files from String[] (ie. automatic escaping of embedded quote chars)</li>
+            </ul>
+            </answer></faq>
+    </part>
+	<part id="reading-and-writing">
+
+			            <title>Reading and Writing</title>
+            <faq id="how-to-read">
+			<question>How do I read and parse a CSV file?</question>
+            <answer>
+                If you want to use an Iterator style pattern, you might do something like
+                this:
+          
+
+            <source>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"));
+    String [] nextLine;
+    while ((nextLine = reader.readNext()) != null) {
+        // nextLine[] is an array of values from the line
+        System.out.println(nextLine[0] + nextLine[1] + "etc...");
+    }
+            </source>
+         
+                Or, if you might just want to slurp the whole lot into a <code>List</code>, just call
+                <code>readAll()</code>...
+           
+
+            <source>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"));
+    List myEntries = reader.readAll();
+            </source>
+       
+                which will give you a <code>List</code> of <code>String[]</code> that you
+                can iterate over. If all else fails, check out the <a href="api/index.html">Javadoc</a>.
+            </answer></faq>
+
+            <faq id="custom-sepators"><question>Can I use my own separators and quote characters?</question>
+            <answer>
+                Yes. There are constructors that cater for supplying your own
+                separator and quote characters. Say you're using a tab for your
+                separator, you can do something like this:
+           
+                <source>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t');
+                </source>
+           
+                And if you single quoted your escaped characters rather than double
+                quote them, you can use the three arg constructor:
+            
+            <source>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t', '\'');
+            </source>
+          
+            	You may also skip the first few lines of the file if you know that
+            	the content doesn't start till later in the file. So, for example,
+            	you can skip the first two lines by doing:
+           
+            <source>
+    CSVReader reader = new CSVReader(new FileReader("yourfile.csv"), '\t', '\'', 2);
+            </source>
+ </answer></faq>
+
+            <faq id="can-I-write"><question>Can I write csv files with opencsv?</question>
+            <answer>
+                Yes. There is a CSVWriter in the same package that follows the same
+                semantics as the CSVReader. For example, to write a tab separated file:
+
+                <source>
+     CSVWriter writer = new CSVWriter(new FileWriter("yourfile.csv"), '\t');
+     // feed in your array (or convert your data to an array)
+     String[] entries = "first#second#third".split("#");
+     writer.writeNext(entries);
+	writer.close();
+                </source>
+                <p/>
+                	If you'd prefer to use your own quote characters, you may use the
+                	three arg version of the constructor,  which takes a quote
+                	character (or feel free to pass in CSVWriter.NO_QUOTE_CHARACTER).
+                <p/>
+                	You can also customise the line terminators used in the generated
+                	file (which is handy when you're exporting from your Linux web
+                	application to Windows clients). There is a constructor argument
+                	for this purpose.
+                </answer></faq>
+            <faq id="sql-integration"><question>Can I dump out SQL tables to CSV?</question>
+            <answer>
+            	Yes you can. Sean Sullivan added a neat feature to CSVWriter so you
+            	can pass <code>writeAll()</code> a ResultSet.
+            
+            <source>
+java.sql.ResultSet myResultSet = ....
+writer.writeAll(myResultSet, includeHeaders);
+            </source>
+		</answer></faq>
+		
+            <faq id="javabean-integration"><question>Is there a way to bind my CSV file to a list of Javabeans?</question>
+            <answer>
+            	Yes there is. Kyle Miller added a new set of classes to allow you to bind
+            	a CSV file to a list of JavaBeans based on column name, column position, or a
+            	custom mapping strategy. You can find the new classes in
+            	the <code>au.com.bytecode.opencsv.bean</code> package.
+            	Here's how you can map to a java bean based on
+            	the field positions in your CSV file:
+          
+            <source>
+ColumnPositionMappingStrategy strat = new ColumnPositionMappingStrategy();
+strat.setType(YourOrderBean.class);
+String[] columns = new String[] {"name", "orderNumber", "id"}; // the fields to bind do in your JavaBean
+strat.setColumnMapping(columns);
+
+CsvToBean csv = new CsvToBean();
+List list = csv.parse(strat, yourReader);
+            </source>
+            
+            For more detailed examples, check out the test cases for each of the available
+            mapping strategies under the /test/au/com/bytecode/opencsv/bean/.
+            </answer></faq>
+			</part>
+			<part id="other">
+
+			            <title>Other Stuff</title>
+
+
+            <faq id="using-commercially"><question>Can I use opencsv in my commercial applications?</question>
+            <answer>
+                Yes. opencsv is available under a commercial-friendly Apache 2.0 license.
+                You are free to include it in your commericial applications without any fee
+                or charge, and you are free to modify it to suit your circumstances. To find
+                out more details of the license, read the <a
+                    href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0
+                license agreement</a>.
+            </answer></faq>
+
+            <faq id="getting-the-source"><question>Can I get the source? More example code?</question>
+            <answer>
+                Yes. The download from the SourceForge page includes the full source in the
+                <code>/src</code> directory. It's just a few files, so go crazy. There is also a
+                sample addressbook csv reader in the <code>/examples</code> directory.
+                And for extra marks, there's a JUnit test suite in the <code>/test</code>
+                directory.
+            </answer></faq>
+
+			<faq id="maven-integration"><question>How can I use it in my Maven projects?</question>
+			<answer>
+				Add a dependency element to your pom:
+				<source>
+<dependency>
+	<groupId>net.sf.opencsv</groupId>
+	<artifactId>opencsv</artifactId>
+	<version>2.0</version>
+</dependency>
+				</source>
+			</answer></faq>
+
+            <faq id="who-maintains"><question>Who maintains opencsv?</question>
+            <answer>
+                opencsv was developed in a couple of hours by Glen Smith. You can read his <a
+                    href="http://blogs.bytecode.com.au/glen">blog</a> for more info
+                and contact details.
+            <p/>
+                If you've found a bug, you can report it on the <a
+                    href="http://www.sf.net/projects/opencsv">project page</a> at
+                Sourceforge. Please post a sample file that demonstrates your issue.
+                For bonus marks, post a patch too. :-)
+            </answer></faq>
+        
+</part>
+</faqs>
+
+ 
