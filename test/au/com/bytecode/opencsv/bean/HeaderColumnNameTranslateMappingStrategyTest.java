@@ -22,28 +22,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 
 public class HeaderColumnNameTranslateMappingStrategyTest extends TestCase {
 
+	@Test
     public void testParse() {
         String s = "n,o,foo\n" +
                 "kyle,123456,emp123\n" +
                 "jimmy,abcnum,cust09878";
-        HeaderColumnNameTranslateMappingStrategy<TestBean> strat = new HeaderColumnNameTranslateMappingStrategy<TestBean>();
-        strat.setType(TestBean.class);
+        HeaderColumnNameTranslateMappingStrategy<MockBean> strat = new HeaderColumnNameTranslateMappingStrategy<MockBean>();
+        strat.setType(MockBean.class);
         Map<String, String> map = new HashMap<String, String>();
         map.put("n", "name");
         map.put("o", "orderNumber");
         map.put("foo", "id");
         strat.setColumnMapping(map);
 
-        CsvToBean<TestBean> csv = new CsvToBean<TestBean>();
-        List<TestBean> list = csv.parse(strat, new StringReader(s));
+        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
+        List<MockBean> list = csv.parse(strat, new StringReader(s));
         assertNotNull(list);
         assertTrue(list.size() == 2);
-        TestBean bean = list.get(0);
+        MockBean bean = list.get(0);
         assertEquals("kyle", bean.getName());
         assertEquals("123456", bean.getOrderNumber());
         assertEquals("emp123", bean.getId());

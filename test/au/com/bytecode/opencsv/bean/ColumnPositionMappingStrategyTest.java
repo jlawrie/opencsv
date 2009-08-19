@@ -20,6 +20,8 @@ package au.com.bytecode.opencsv.bean;
 import java.io.StringReader;
 import java.util.List;
 
+import org.junit.Test;
+
 import au.com.bytecode.opencsv.bean.ColumnPositionMappingStrategy;
 import au.com.bytecode.opencsv.bean.CsvToBean;
 
@@ -28,20 +30,21 @@ import junit.framework.TestCase;
 
 public class ColumnPositionMappingStrategyTest extends TestCase {
 
+	@Test
     public void testParse() {
         String s = "" +
                 "kyle,123456,emp123\n" +
                 "jimmy,abcnum,cust09878";
-        ColumnPositionMappingStrategy<TestBean> strat = new ColumnPositionMappingStrategy<TestBean>();
-        strat.setType(TestBean.class);
+        ColumnPositionMappingStrategy<MockBean> strat = new ColumnPositionMappingStrategy<MockBean>();
+        strat.setType(MockBean.class);
         String[] columns = new String[] {"name", "orderNumber", "id"};
         strat.setColumnMapping(columns);
 
-        CsvToBean<TestBean> csv = new CsvToBean<TestBean>();
-        List<TestBean> list = csv.parse(strat, new StringReader(s));
+        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
+        List<MockBean> list = csv.parse(strat, new StringReader(s));
         assertNotNull(list);
         assertTrue(list.size() == 2);
-        TestBean bean = list.get(0);
+        MockBean bean = list.get(0);
         assertEquals("kyle", bean.getName());
         assertEquals("123456", bean.getOrderNumber());
         assertEquals("emp123", bean.getId());
