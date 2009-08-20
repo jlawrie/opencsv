@@ -195,7 +195,7 @@ List list = csv.parse(strat, yourReader);
                 opencsv was developed in a couple of hours by Glen Smith. You can read his <a
                     href="http://blogs.bytecode.com.au/glen">blog</a> for more info
                 and contact details. Kyle Miller contributed the bean binding work,
-				Scott Conway has done tons of bug fixing, and Sean Sullis is the current maintainer
+				Scott Conway has done tons of bug fixing, and Sean Sullivan is the current maintainer
 				of the project.
             <p/>
                 If you've found a bug, you can report it on the <a
@@ -204,6 +204,14 @@ List list = csv.parse(strat, yourReader);
                 For bonus marks, post a patch too. :-)
             </answer></faq>
         
+</part>
+<part id="developerStuff">
+	<title>opencsv Development Stuff</title>
+	<faq id="where-is-the-snapshot-repo">
+		<question>Is there a snapshot Maven repo for opencsv?</question>
+		<answer>Yes. We're using a <a href="http://oss.sonatype.org/content/groups/sourceforge/net/sf/opencsv/opencsv/">repo</a> provided by the good folk at Sonatype.
+		</answer>
+	</faq>
 </part>
 </faqs>
 
