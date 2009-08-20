@@ -194,7 +194,9 @@ List list = csv.parse(strat, yourReader);
             <answer>
                 opencsv was developed in a couple of hours by Glen Smith. You can read his <a
                     href="http://blogs.bytecode.com.au/glen">blog</a> for more info
-                and contact details.
+                and contact details. Kyle Miller contributed the bean binding work,
+				Scott Conway has done tons of bug fixing, and Sean Sullis is the current maintainer
+				of the project.
             <p/>
                 If you've found a bug, you can report it on the <a
                     href="http://www.sf.net/projects/opencsv">project page</a> at
