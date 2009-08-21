@@ -16,35 +16,33 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class OpencsvTest extends TestCase {
+public class OpencsvTest {
 
 	private File tempFile = null;
 	private CSVWriter writer = null;
 	private CSVReader reader = null;
 
-	protected void setUp() throws Exception {
-		super.setUp();
-
-		try {
-			tempFile = File.createTempFile("csvWriterTest", ".csv");
-			tempFile.deleteOnExit();
-			// System.out.println("filename: "+tempFile.getAbsolutePath());
-		} catch (IOException e) {
-			fail();
-		}
+	@Before
+	public void setUp() throws IOException {
+		tempFile = File.createTempFile("csvWriterTest", ".csv");
+		tempFile.deleteOnExit();
 	}
 
 	/**
 	 * Test the full cycle of write-read
 	 * 
 	 */
+	@Test
 	public void testWriteRead() throws IOException {
 		final String[][] data = new String[][]{{"hello, a test", "one nested \" test"}, {"\"\"", "test", null, "8"}};
 

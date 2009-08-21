@@ -25,6 +25,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 public class CSVWriterTest extends TestCase {
@@ -53,6 +55,7 @@ public class CSVWriterTest extends TestCase {
      * @throws IOException
      *             if the reader fails.
      */
+    @Test
     public void testParseLine() throws IOException {
 
         // test normal case
@@ -83,6 +86,7 @@ public class CSVWriterTest extends TestCase {
      * @throws IOException
      *             if the reader fails.
      */
+    @Test
     public void testParseAll() throws IOException {
 
         List<String[]> allElements = new ArrayList<String[]>();
@@ -109,6 +113,7 @@ public class CSVWriterTest extends TestCase {
      * 
      * @throws IOException if bad things happen
      */
+    @Test
     public void testNoQuoteChars() throws IOException {
     	
         String[] line = {"Foo","Bar","Baz"};
@@ -125,7 +130,7 @@ public class CSVWriterTest extends TestCase {
      *
      * @throws IOException if bad things happen
      */
-
+    @Test
     public void testNullValues() throws IOException {
 
         String[] line = {"Foo",null,"Bar","baz"};
@@ -137,7 +142,8 @@ public class CSVWriterTest extends TestCase {
         assertEquals("\"Foo\",,\"Bar\",\"baz\"\n",result);
 
     }
-
+    
+    @Test
     public void testStreamFlushing() throws IOException {
 
         String WRITE_FILE = "myfile.csv";
@@ -153,7 +159,8 @@ public class CSVWriterTest extends TestCase {
         writer.close();
 
     }
-
+    
+    @Test
     public void testAlternateEscapeChar() {
         String[] line = {"Foo","bar's"};
         StringWriter sw = new StringWriter();
@@ -162,6 +169,7 @@ public class CSVWriterTest extends TestCase {
         assertEquals("\"Foo\",\"bar''s\"\n",sw.toString());
     }
     
+    @Test
     public void testNoQuotingNoEscaping() {
         String[] line = {"\"Foo\",\"Bar\""};
         StringWriter sw = new StringWriter();
@@ -170,7 +178,7 @@ public class CSVWriterTest extends TestCase {
         assertEquals("\"Foo\",\"Bar\"\n",sw.toString());
     }
     
-
+    @Test
     public void testNestedQuotes(){
         String[] data = new String[]{"\"\"", "test"};
         String oracle = new String("\"\"\"\"\"\",\"test\"\n");
@@ -227,7 +235,7 @@ public class CSVWriterTest extends TestCase {
         assertTrue(oracle.equals(fileContents.toString()));
     }
 
-    
+    @Test
     public void testAlternateLineFeeds() {
         String[] line = {"Foo","Bar","baz"};
         StringWriter sw = new StringWriter();

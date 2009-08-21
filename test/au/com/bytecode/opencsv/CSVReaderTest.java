@@ -19,6 +19,9 @@ package au.com.bytecode.opencsv;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 public class CSVReaderTest extends TestCase {
@@ -29,6 +32,7 @@ public class CSVReaderTest extends TestCase {
 	/**
 	 * Setup the test.
 	 */
+	@Before
 	protected void setUp() throws Exception {
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
 		sb.append("a,b,c").append("\n");   // standard case
@@ -48,6 +52,7 @@ public class CSVReaderTest extends TestCase {
 	 * @throws IOException
 	 *             if the reader fails.
 	 */
+	@Test
 	public void testParseLine() throws IOException {
 
 		// test normal case
@@ -92,6 +97,7 @@ public class CSVReaderTest extends TestCase {
 	 * @throws IOException
 	 *             if the reader fails.
 	 */
+	@Test
 	public void testParseAll() throws IOException {
 		assertEquals(7, csvr.readAll().size());
 	}
@@ -101,6 +107,7 @@ public class CSVReaderTest extends TestCase {
 	 * 
 	 * @throws IOException if the reader fails.
 	 */
+	@Test
 	public void testOptionalConstructors() throws IOException {
 		
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -122,6 +129,7 @@ public class CSVReaderTest extends TestCase {
 	 * 
 	 * @throws IOException if bad things happen
 	 */
+	@Test
 	public void testSkippingLines() throws IOException {
 		
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -141,6 +149,7 @@ public class CSVReaderTest extends TestCase {
 	 * 
 	 * @throws IOException if bad things happen
 	 */
+	@Test
 	public void testParsedLineWithInternalQuota() throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -160,6 +169,7 @@ public class CSVReaderTest extends TestCase {
 	 * Test a normal non quoted line with three elements
 	 * @throws IOException
 	 */
+	@Test
 	public void testNormalParsedLine() throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -181,6 +191,7 @@ public class CSVReaderTest extends TestCase {
 	 * Test a line where one of the elements is a single Double quote "
 	 * @throws IOException
 	 */
+	@Test
 	public void testADoubleQuoteAsDataElement() throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -203,6 +214,7 @@ public class CSVReaderTest extends TestCase {
 	 * Test a line where one of the elements is a single Double quote "
 	 * @throws IOException
 	 */
+	@Test
 	public void testEscapedDoubleQuoteAsDataElement() throws IOException {
 		 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -226,6 +238,7 @@ public class CSVReaderTest extends TestCase {
 	 * single quote. 
 	 * @throws IOException
 	 */
+	@Test
 	public void testASingleQuoteAsDataElement() throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -249,6 +262,7 @@ public class CSVReaderTest extends TestCase {
 	 * single quote.  Also the middle field is empty. 
 	 * @throws IOException
 	 */
+	@Test
 	public void testASingleQuoteAsDataElementWithEmptyField() throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -274,6 +288,7 @@ public class CSVReaderTest extends TestCase {
 	 * @throws IOException 
 	 * 
 	 */
+	@Test
 	public void testIssue2263439() throws IOException {
 		
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -294,6 +309,7 @@ public class CSVReaderTest extends TestCase {
 		
 	}
 	
+	@Test
 	public void testEscapedQuote() throws IOException {
 
 		StringBuffer sb = new StringBuffer();
@@ -309,6 +325,7 @@ public class CSVReaderTest extends TestCase {
 
 	}
 
+	@Test
 	public void testEscapedEscape() throws IOException {
 
 		StringBuffer sb = new StringBuffer();
@@ -331,6 +348,7 @@ public class CSVReaderTest extends TestCase {
 	 * single quotes. 
 	 * @throws IOException
 	 */
+	@Test
 	public void testSingleQuoteWhenDoubleQuoteIsQuoteChar() throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -353,6 +371,7 @@ public class CSVReaderTest extends TestCase {
 	 * Test a normal line with three elements and all elements are quoted
 	 * @throws IOException
 	 */
+	@Test
 	public void testQuotedParsedLine() throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
@@ -380,7 +399,7 @@ public class CSVReaderTest extends TestCase {
 	 *	"804503689","London",""London""shop","address","116.453182","39.918884"
 	 *	"453074125","NewYork","brief","address"","121.514683","31.228511"
 	 */
-	
+	@Test
 	public void testIssue2726363()throws IOException {
 
 		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
