@@ -16,6 +16,7 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -29,7 +30,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,9 +38,11 @@ import java.util.List;
  * @author Glen Smith
  *
  */
-public class CSVWriter {
+public class CSVWriter implements Closeable {
     
-    private Writer rawWriter;
+    public static final int INITIAL_STRING_SIZE = 128;
+
+	private Writer rawWriter;
 
     private PrintWriter pw;
 
@@ -72,14 +74,6 @@ public class CSVWriter {
     
     /** Default line terminator uses platform encoding. */
     public static final String DEFAULT_LINE_END = "\n";
-
-    private static final SimpleDateFormat
-    	TIMESTAMP_FORMATTER = 
-    		new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-
-    private static final SimpleDateFormat
-    	DATE_FORMATTER = 
-    		new SimpleDateFormat("dd-MMM-yyyy");
     
     /**
      * Constructs CSVWriter using a comma for the separator.
@@ -183,13 +177,10 @@ public class CSVWriter {
      *            a List of String[], with each String[] representing a line of
      *            the file.
      */
-    public void writeAll(List allLines)  {
-
-        for (Iterator iter = allLines.iterator(); iter.hasNext();) {
-            String[] nextLine = (String[]) iter.next();
-            writeNext(nextLine);
-        }
-
+    public void writeAll(List<String[]> allLines)  {
+    	for (String[] line : allLines) {
+			writeNext(line);
+		}
     }
 
     protected void writeColumnNames(ResultSetMetaData metadata)
@@ -262,6 +253,11 @@ public class CSVWriter {
 				}
 			break;
 			case Types.BIGINT:
+				long lv = rs.getLong(colIndex);
+				if (!rs.wasNull()) {
+					value = Long.toString(lv);
+				}
+				break;
 			case Types.DECIMAL:
 			case Types.DOUBLE:
 			case Types.FLOAT:
@@ -269,7 +265,7 @@ public class CSVWriter {
 			case Types.NUMERIC:
 				BigDecimal bd = rs.getBigDecimal(colIndex);
 				if (bd != null) {
-					value = "" + bd.doubleValue();
+					value = bd.toString();
 				}
 			break;
 			case Types.INTEGER:
@@ -277,7 +273,7 @@ public class CSVWriter {
 			case Types.SMALLINT:
 				int intValue = rs.getInt(colIndex);
 				if (!rs.wasNull()) {
-					value = "" + intValue;
+					value = Integer.toString(intValue);
 				}
 			break;
 			case Types.JAVA_OBJECT:
@@ -289,7 +285,8 @@ public class CSVWriter {
 			case Types.DATE:
 				java.sql.Date date = rs.getDate(colIndex);
 				if (date != null) {
-					value = DATE_FORMATTER.format(date);;
+				    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+					value = dateFormat.format(date);;
 				}
 			break;
 			case Types.TIME:
@@ -301,7 +298,8 @@ public class CSVWriter {
 			case Types.TIMESTAMP:
 				Timestamp tstamp = rs.getTimestamp(colIndex);
 				if (tstamp != null) {
-					value = TIMESTAMP_FORMATTER.format(tstamp);
+					SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+					value = timeFormat.format(tstamp);
 				}
 			break;
 			case Types.LONGVARCHAR:
@@ -325,7 +323,7 @@ public class CSVWriter {
 
 	private static String read(Clob c) throws SQLException, IOException
 	{
-		StringBuffer sb = new StringBuffer( (int) c.length());
+		StringBuilder sb = new StringBuilder( (int) c.length());
 		Reader r = c.getCharacterStream();
 		char[] cbuf = new char[2048];
 		int n = 0;
@@ -349,7 +347,7 @@ public class CSVWriter {
     	if (nextLine == null)
     		return;
     	
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder(INITIAL_STRING_SIZE);
         for (int i = 0; i < nextLine.length; i++) {
 
             if (i != 0) {
@@ -361,16 +359,9 @@ public class CSVWriter {
                 continue;
             if (quotechar !=  NO_QUOTE_CHARACTER)
             	sb.append(quotechar);
-            for (int j = 0; j < nextElement.length(); j++) {
-                char nextChar = nextElement.charAt(j);
-                if (escapechar != NO_ESCAPE_CHARACTER && nextChar == quotechar) {
-                	sb.append(escapechar).append(nextChar);
-                } else if (escapechar != NO_ESCAPE_CHARACTER && nextChar == escapechar) {
-                	sb.append(escapechar).append(nextChar);
-                } else {
-                    sb.append(nextChar);
-                }
-            }
+            
+            sb.append(stringContainsSpecialCharacters(nextElement) ? processLine(nextElement) : nextElement);
+
             if (quotechar != NO_QUOTE_CHARACTER)
             	sb.append(quotechar);
         }
@@ -378,6 +369,27 @@ public class CSVWriter {
         sb.append(lineEnd);
         pw.write(sb.toString());
 
+    }
+
+	private boolean stringContainsSpecialCharacters(String line) {
+	    return line.indexOf(quotechar) != -1 || line.indexOf(escapechar) != -1;
+    }
+
+	private StringBuilder processLine(String nextElement)
+    {
+		StringBuilder sb = new StringBuilder(INITIAL_STRING_SIZE);
+	    for (int j = 0; j < nextElement.length(); j++) {
+	        char nextChar = nextElement.charAt(j);
+	        if (escapechar != NO_ESCAPE_CHARACTER && nextChar == quotechar) {
+	        	sb.append(escapechar).append(nextChar);
+	        } else if (escapechar != NO_ESCAPE_CHARACTER && nextChar == escapechar) {
+	        	sb.append(escapechar).append(nextChar);
+	        } else {
+	            sb.append(nextChar);
+	        }
+	    }
+	    
+	    return sb;
     }
 
     /**

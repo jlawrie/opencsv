@@ -22,9 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import au.com.bytecode.opencsv.bean.CsvToBean;
-import au.com.bytecode.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
-
 import junit.framework.TestCase;
 
 
@@ -34,19 +31,19 @@ public class HeaderColumnNameTranslateMappingStrategyTest extends TestCase {
         String s = "n,o,foo\n" +
                 "kyle,123456,emp123\n" +
                 "jimmy,abcnum,cust09878";
-        HeaderColumnNameTranslateMappingStrategy strat = new HeaderColumnNameTranslateMappingStrategy();
+        HeaderColumnNameTranslateMappingStrategy<TestBean> strat = new HeaderColumnNameTranslateMappingStrategy<TestBean>();
         strat.setType(TestBean.class);
-        Map map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("n", "name");
         map.put("o", "orderNumber");
         map.put("foo", "id");
         strat.setColumnMapping(map);
 
-        CsvToBean csv = new CsvToBean();
-        List list = csv.parse(strat, new StringReader(s));
+        CsvToBean<TestBean> csv = new CsvToBean<TestBean>();
+        List<TestBean> list = csv.parse(strat, new StringReader(s));
         assertNotNull(list);
         assertTrue(list.size() == 2);
-        TestBean bean = (TestBean)list.get(0);
+        TestBean bean = list.get(0);
         assertEquals("kyle", bean.getName());
         assertEquals("123456", bean.getOrderNumber());
         assertEquals("emp123", bean.getId());

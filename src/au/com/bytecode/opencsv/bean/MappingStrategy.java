@@ -23,17 +23,17 @@ import java.io.IOException;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-public interface MappingStrategy {
+public interface MappingStrategy<T> {
 
     /**
      * Implementation will have to return a property descriptor from a bean based on the current column.
      */
     public abstract PropertyDescriptor findDescriptor(int col) throws IntrospectionException;
 
-    public abstract Object createBean() throws InstantiationException, IllegalAccessException;
+    public abstract T createBean() throws InstantiationException, IllegalAccessException;
 
     /**
-     * Implemention of this method can grab the header line before parsing begins to use to map columns
+     * Implementation of this method can grab the header line before parsing begins to use to map columns
      * to bean properties.
      */
     public void captureHeader(CSVReader reader) throws IOException;

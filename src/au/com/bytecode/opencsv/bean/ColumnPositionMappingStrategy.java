@@ -19,7 +19,7 @@ import au.com.bytecode.opencsv.CSVReader;
  limitations under the License.
  */
 
-public class ColumnPositionMappingStrategy extends HeaderColumnNameMappingStrategy {
+public class ColumnPositionMappingStrategy<T> extends HeaderColumnNameMappingStrategy<T> {
     protected String[] columnMapping = new String[] {};
     public void captureHeader(CSVReader reader) throws IOException {
         //do nothing, first line is not header

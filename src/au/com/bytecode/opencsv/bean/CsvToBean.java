@@ -23,23 +23,29 @@ import java.beans.PropertyEditorManager;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-public class CsvToBean {
-
+public class CsvToBean<T> {
+	Map <Class<?>, PropertyEditor> editorMap = null;
     public CsvToBean() {
     }
 
-    public List parse(MappingStrategy mapper, Reader reader) {
+    public List<T> parse(MappingStrategy<T> mapper, Reader reader) {
+
+    	return parse(mapper, new CSVReader(reader));
+    }
+    
+    public List<T> parse(MappingStrategy<T> mapper, CSVReader csv) {
         try {
-            CSVReader csv = new CSVReader(reader);
             mapper.captureHeader(csv);
             String[] line;
-            List list = new ArrayList();
+            List<T> list = new ArrayList<T>();
             while(null != (line = csv.readNext())) {
-                Object obj = processLine(mapper, line);
+                T obj = processLine(mapper, line);
                 list.add(obj); // TODO: (Kyle) null check object
             }
             return list;
@@ -48,8 +54,8 @@ public class CsvToBean {
         }
     }
 
-    protected Object processLine(MappingStrategy mapper, String[] line) throws IllegalAccessException, InvocationTargetException, InstantiationException, IntrospectionException {
-        Object bean = mapper.createBean();
+    protected T processLine(MappingStrategy<T> mapper, String[] line) throws IllegalAccessException, InvocationTargetException, InstantiationException, IntrospectionException {
+    	T bean = mapper.createBean();
         for(int col = 0; col < line.length; col++) {
             String value = line[col];
             PropertyDescriptor prop = mapper.findDescriptor(col);
@@ -65,19 +71,46 @@ public class CsvToBean {
         PropertyEditor editor = getPropertyEditor(prop);
         Object obj = value;
         if (null != editor) {
-            editor.setAsText(value);
+            editor.setAsText(value.trim());
             obj = editor.getValue();
         }
         return obj;
     }
+    
+    private PropertyEditor getPropertyEditorValue(Class<?> cls)
+    {
+       if (editorMap == null)
+       {
+          editorMap = new HashMap<Class<?>, PropertyEditor>();
+       }
+       
+       PropertyEditor editor = editorMap.get(cls);
+       
+       if (editor == null)
+       {
+          editor = PropertyEditorManager.findEditor(cls);
+          addEditorToMap(cls, editor);
+       }
+       
+       return editor;
+    }
+
+   private void addEditorToMap(Class<?> cls, PropertyEditor editor)
+   {
+      if (editor != null)
+       {   
+          editorMap.put(cls, editor);
+       }
+   }
+
 
     /*
      * Attempt to find custom property editor on descriptor first, else try the propery editor manager.
      */
     protected PropertyEditor getPropertyEditor(PropertyDescriptor desc) throws InstantiationException, IllegalAccessException {
-        Class cls = desc.getPropertyEditorClass();
+        Class<?> cls = desc.getPropertyEditorClass();
         if (null != cls) return (PropertyEditor) cls.newInstance();
-        return PropertyEditorManager.findEditor(desc.getPropertyType());
+        return getPropertyEditorValue(desc.getPropertyType());
     }
 
 }
