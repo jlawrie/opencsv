@@ -16,7 +16,7 @@ package au.com.bytecode.opencsv.bean;
  limitations under the License.
  */
 
-    public class MockBean {
+    public class TestBean {
         private String name;
         private String id;
         private String orderNumber;

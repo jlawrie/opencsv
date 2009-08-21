@@ -16,7 +16,6 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -30,6 +29,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,11 +38,9 @@ import java.util.List;
  * @author Glen Smith
  *
  */
-public class CSVWriter implements Closeable {
+public class CSVWriter {
     
-    public static final int INITIAL_STRING_SIZE = 128;
-
-	private Writer rawWriter;
+    private Writer rawWriter;
 
     private PrintWriter pw;
 
@@ -74,6 +72,14 @@ public class CSVWriter implements Closeable {
     
     /** Default line terminator uses platform encoding. */
     public static final String DEFAULT_LINE_END = "\n";
+
+    private static final SimpleDateFormat
+    	TIMESTAMP_FORMATTER = 
+    		new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+
+    private static final SimpleDateFormat
+    	DATE_FORMATTER = 
+    		new SimpleDateFormat("dd-MMM-yyyy");
     
     /**
      * Constructs CSVWriter using a comma for the separator.
@@ -177,10 +183,13 @@ public class CSVWriter implements Closeable {
      *            a List of String[], with each String[] representing a line of
      *            the file.
      */
-    public void writeAll(List<String[]> allLines)  {
-    	for (String[] line : allLines) {
-			writeNext(line);
-		}
+    public void writeAll(List allLines)  {
+
+        for (Iterator iter = allLines.iterator(); iter.hasNext();) {
+            String[] nextLine = (String[]) iter.next();
+            writeNext(nextLine);
+        }
+
     }
 
     protected void writeColumnNames(ResultSetMetaData metadata)
@@ -253,11 +262,6 @@ public class CSVWriter implements Closeable {
 				}
 			break;
 			case Types.BIGINT:
-				long lv = rs.getLong(colIndex);
-				if (!rs.wasNull()) {
-					value = Long.toString(lv);
-				}
-				break;
 			case Types.DECIMAL:
 			case Types.DOUBLE:
 			case Types.FLOAT:
@@ -265,7 +269,7 @@ public class CSVWriter implements Closeable {
 			case Types.NUMERIC:
 				BigDecimal bd = rs.getBigDecimal(colIndex);
 				if (bd != null) {
-					value = bd.toString();
+					value = "" + bd.doubleValue();
 				}
 			break;
 			case Types.INTEGER:
@@ -273,7 +277,7 @@ public class CSVWriter implements Closeable {
 			case Types.SMALLINT:
 				int intValue = rs.getInt(colIndex);
 				if (!rs.wasNull()) {
-					value = Integer.toString(intValue);
+					value = "" + intValue;
 				}
 			break;
 			case Types.JAVA_OBJECT:
@@ -285,8 +289,7 @@ public class CSVWriter implements Closeable {
 			case Types.DATE:
 				java.sql.Date date = rs.getDate(colIndex);
 				if (date != null) {
-				    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-					value = dateFormat.format(date);;
+					value = DATE_FORMATTER.format(date);;
 				}
 			break;
 			case Types.TIME:
@@ -298,8 +301,7 @@ public class CSVWriter implements Closeable {
 			case Types.TIMESTAMP:
 				Timestamp tstamp = rs.getTimestamp(colIndex);
 				if (tstamp != null) {
-					SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-					value = timeFormat.format(tstamp);
+					value = TIMESTAMP_FORMATTER.format(tstamp);
 				}
 			break;
 			case Types.LONGVARCHAR:
@@ -323,7 +325,7 @@ public class CSVWriter implements Closeable {
 
 	private static String read(Clob c) throws SQLException, IOException
 	{
-		StringBuilder sb = new StringBuilder( (int) c.length());
+		StringBuffer sb = new StringBuffer( (int) c.length());
 		Reader r = c.getCharacterStream();
 		char[] cbuf = new char[2048];
 		int n = 0;
@@ -347,7 +349,7 @@ public class CSVWriter implements Closeable {
     	if (nextLine == null)
     		return;
     	
-        StringBuilder sb = new StringBuilder(INITIAL_STRING_SIZE);
+        StringBuffer sb = new StringBuffer();
         for (int i = 0; i < nextLine.length; i++) {
 
             if (i != 0) {
@@ -359,9 +361,16 @@ public class CSVWriter implements Closeable {
                 continue;
             if (quotechar !=  NO_QUOTE_CHARACTER)
             	sb.append(quotechar);
-            
-            sb.append(stringContainsSpecialCharacters(nextElement) ? processLine(nextElement) : nextElement);
-
+            for (int j = 0; j < nextElement.length(); j++) {
+                char nextChar = nextElement.charAt(j);
+                if (escapechar != NO_ESCAPE_CHARACTER && nextChar == quotechar) {
+                	sb.append(escapechar).append(nextChar);
+                } else if (escapechar != NO_ESCAPE_CHARACTER && nextChar == escapechar) {
+                	sb.append(escapechar).append(nextChar);
+                } else {
+                    sb.append(nextChar);
+                }
+            }
             if (quotechar != NO_QUOTE_CHARACTER)
             	sb.append(quotechar);
         }
@@ -369,27 +378,6 @@ public class CSVWriter implements Closeable {
         sb.append(lineEnd);
         pw.write(sb.toString());
 
-    }
-
-	private boolean stringContainsSpecialCharacters(String line) {
-	    return line.indexOf(quotechar) != -1 || line.indexOf(escapechar) != -1;
-    }
-
-	private StringBuilder processLine(String nextElement)
-    {
-		StringBuilder sb = new StringBuilder(INITIAL_STRING_SIZE);
-	    for (int j = 0; j < nextElement.length(); j++) {
-	        char nextChar = nextElement.charAt(j);
-	        if (escapechar != NO_ESCAPE_CHARACTER && nextChar == quotechar) {
-	        	sb.append(escapechar).append(nextChar);
-	        } else if (escapechar != NO_ESCAPE_CHARACTER && nextChar == escapechar) {
-	        	sb.append(escapechar).append(nextChar);
-	        } else {
-	            sb.append(nextChar);
-	        }
-	    }
-	    
-	    return sb;
     }
 
     /**

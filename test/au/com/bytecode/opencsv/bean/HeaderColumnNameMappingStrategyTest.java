@@ -20,8 +20,6 @@ package au.com.bytecode.opencsv.bean;
 import java.io.StringReader;
 import java.util.List;
 
-import org.junit.Test;
-
 import au.com.bytecode.opencsv.bean.CsvToBean;
 import au.com.bytecode.opencsv.bean.HeaderColumnNameMappingStrategy;
 
@@ -30,37 +28,20 @@ import junit.framework.TestCase;
 
 public class HeaderColumnNameMappingStrategyTest extends TestCase {
 
-	@Test
     public void testParse() {
         String s = "name,orderNumber,num\n" +
                 "kyle,abc123456,123\n" +
                 "jimmy,def098765,456";
-        HeaderColumnNameMappingStrategy<MockBean> strat = new HeaderColumnNameMappingStrategy<MockBean>();
-        strat.setType(MockBean.class);
-        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
-        List<MockBean> list = csv.parse(strat, new StringReader(s));
+        HeaderColumnNameMappingStrategy strat = new HeaderColumnNameMappingStrategy();
+        strat.setType(TestBean.class);
+        CsvToBean csv = new CsvToBean();
+        List list = csv.parse(strat, new StringReader(s));
         assertNotNull(list);
         assertTrue(list.size() == 2);
-        MockBean bean = list.get(0);
+        TestBean bean = (TestBean)list.get(0);
         assertEquals("kyle", bean.getName());
         assertEquals("abc123456", bean.getOrderNumber());
         assertEquals(123, bean.getNum());
     }
 
-	@Test
-    public void testParseWithSpacesInHeader() {
-        String s = "name, orderNumber, num\n" +
-                "kyle, abc123456, 123\n" +
-                "jimmy, def098765,456";
-        HeaderColumnNameMappingStrategy<MockBean> strat = new HeaderColumnNameMappingStrategy<MockBean>();
-        strat.setType(MockBean.class);
-        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
-        List<MockBean> list = csv.parse(strat, new StringReader(s));
-        assertNotNull(list);
-        assertTrue(list.size() == 2);
-        MockBean bean = (MockBean) list.get(0);
-        assertEquals("kyle", bean.getName());
-        assertEquals("abc123456", bean.getOrderNumber());
-        assertEquals(123, bean.getNum());
-    }
 }

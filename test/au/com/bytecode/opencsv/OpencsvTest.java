@@ -21,9 +21,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import junit.framework.TestCase;
 
 public class OpencsvTest extends TestCase {
@@ -32,7 +29,6 @@ public class OpencsvTest extends TestCase {
 	private CSVWriter writer = null;
 	private CSVReader reader = null;
 
-	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
 
@@ -49,7 +45,6 @@ public class OpencsvTest extends TestCase {
 	 * Test the full cycle of write-read
 	 * 
 	 */
-	@Test
 	public void testWriteRead() throws IOException {
 		final String[][] data = new String[][]{{"hello, a test", "one nested \" test"}, {"\"\"", "test", null, "8"}};
 
