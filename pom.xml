@@ -40,6 +40,10 @@
 			<email>sconway@users.sourceforge.net</email>
 		</developer>
 	</developers>
+	<issueManagement>
+	    <system>Sourceforge</system>
+	    <url>http://sourceforge.net/tracker/?group_id=148905</url>
+	</issueManagement>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
@@ -53,13 +57,13 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-surefire-plugin</artifactId>			    
-			    <configuration>
-			    	<excludes>
-			        	<exclude>**/Test*.java</exclude>
-			        </excludes>
-			     </configuration>
-			 </plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/Test*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -86,14 +90,14 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin> 
-                 <artifactId>maven-assembly-plugin</artifactId> 
-                 <configuration> 
-                         <descriptorRefs> 
-                                 <descriptorRef>project</descriptorRef> 
-                         </descriptorRefs> 
-                 </configuration> 
-            </plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>project</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
 			<!--
 				gpg is required for Sonatype's publishing mechansism to central
 			-->
@@ -107,6 +111,26 @@
 						<goals>
 							<goal>sign</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.0-beta-1</version>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>1.5</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
