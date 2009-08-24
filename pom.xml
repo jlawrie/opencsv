@@ -121,13 +121,14 @@
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
+						<phase>validate</phase>
 						<goals>
 							<goal>enforce</goal>
 						</goals>
 						<configuration>
 							<rules>
 								<requireJavaVersion>
-									<version>1.5</version>
+									<version>[1.5,1.6)</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>

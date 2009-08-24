@@ -21,7 +21,8 @@
 				<question>Where can I get it?</question>
             	<answer>
                 	Source and binaries are available from
-                <a href="http://www.sf.net/projects/opencsv">Sourceforge</a>.
+                <a href="http://www.sf.net/projects/opencsv">Sourceforge</a>. You can check out
+				the <a href="apidocs/index.html">javadocs</a> online.
             </answer></faq>
 
             <faq id="what-features">
@@ -69,7 +70,7 @@
             </source>
        
                 which will give you a <code>List</code> of <code>String[]</code> that you
-                can iterate over. If all else fails, check out the <a href="api/index.html">Javadoc</a>.
+                can iterate over. If all else fails, check out the <a href="apidocs/index.html">Javadoc</a>.
             </answer></faq>
 
             <faq id="custom-sepators"><question>Can I use my own separators and quote characters?</question>
