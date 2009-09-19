@@ -309,6 +309,32 @@ public class CSVReaderTest extends TestCase {
 		
 	}
 	
+	/**
+	 * Test issue 2859181 where an escaped character before a character
+	 * that did not need escaping was causing the parse to fail.  
+	 * 
+	 * @throws IOException 
+	 * 
+	 */
+	@Test
+	public void testIssue2859181() throws IOException {
+		
+		StringBuilder sb = new StringBuilder(CSVReader.INITIAL_READ_SIZE);
+
+		sb.append("field1;\\=field2;\"\"\"field3\"\"\"").append("\n");
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()), ';', CSVReader.DEFAULT_QUOTE_CHARACTER, CSVReader.DEFAULT_ESCAPE_CHARACTER);
+
+		String[] nextLine = c.readNext();
+
+		assertEquals(3, nextLine.length);
+		
+		assertEquals("field1", nextLine[0]);
+		assertEquals("=field2", nextLine[1]);
+		assertEquals("\"field3\"", nextLine[2]);
+		
+	}
+	
 	@Test
 	public void testEscapedQuote() throws IOException {
 

@@ -1239,6 +1239,7 @@ class MockResultSetMetaData implements ResultSetMetaData
 		meta.addColumn(new MockColumn(Types.TIMESTAMP, "TimeStampColumn"));
 		meta.addColumn(new MockColumn(Types.NUMERIC, "NumericColumn"));
 		meta.addColumn(new MockColumn(Types.DECIMAL, "DecimalColumn"));
+		meta.addColumn(new MockColumn(Types.BIGINT, "BigIntegerColumn"));
 		
 		return meta;
 	}

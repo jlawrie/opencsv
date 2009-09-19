@@ -240,9 +240,7 @@ public class CSVReader implements Closeable {
                 	if( isEscapable(nextLine, inQuotes, i) ){ 
                 		sb.append(nextLine.charAt(i+1));
                 		i++;
-                	} else {
-                		i++; // ignore the escape
-                	}
+                	} 
                 } else if (c == quotechar) {
                 	if( isEscapedQuote(nextLine, inQuotes, i) ){ 
                 		sb.append(nextLine.charAt(i+1));
