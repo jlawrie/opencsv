@@ -1,7 +1,8 @@
 package au.com.bytecode.opencsv.bean;
-import java.io.IOException;
 
 import au.com.bytecode.opencsv.CSVReader;
+
+import java.io.IOException;
 
 /**
  Copyright 2007 Kyle Miller.
@@ -20,7 +21,7 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 
 public class ColumnPositionMappingStrategy<T> extends HeaderColumnNameMappingStrategy<T> {
-    protected String[] columnMapping = new String[] {};
+    private String[] columnMapping = new String[] {};
     public void captureHeader(CSVReader reader) throws IOException {
         //do nothing, first line is not header
     }

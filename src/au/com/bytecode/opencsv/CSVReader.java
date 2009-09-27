@@ -265,7 +265,7 @@ public class CSVReader implements Closeable {
             }
         } while (inQuotes);
         tokensOnThisLine.add(sb.toString());
-        return tokensOnThisLine.toArray(new String[0]);
+        return tokensOnThisLine.toArray(new String[tokensOnThisLine.size()]);
 
     }
 

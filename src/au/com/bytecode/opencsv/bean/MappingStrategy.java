@@ -17,16 +17,19 @@ package au.com.bytecode.opencsv.bean;
  limitations under the License.
  */
 
+import au.com.bytecode.opencsv.CSVReader;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 public interface MappingStrategy<T> {
 
     /**
      * Implementation will have to return a property descriptor from a bean based on the current column.
+     * @param col
+     * @throws java.beans.IntrospectionException
+     * @return
      */
     public abstract PropertyDescriptor findDescriptor(int col) throws IntrospectionException;
 
@@ -35,6 +38,8 @@ public interface MappingStrategy<T> {
     /**
      * Implementation of this method can grab the header line before parsing begins to use to map columns
      * to bean properties.
+     * @param reader
+     * @throws java.io.IOException
      */
     public void captureHeader(CSVReader reader) throws IOException;
 

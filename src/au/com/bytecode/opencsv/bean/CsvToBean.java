@@ -16,6 +16,8 @@ package au.com.bytecode.opencsv.bean;
  limitations under the License.
  */
 
+import au.com.bytecode.opencsv.CSVReader;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
@@ -27,10 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 public class CsvToBean<T> {
-	Map <Class<?>, PropertyEditor> editorMap = null;
+	private Map <Class<?>, PropertyEditor> editorMap = null;
     public CsvToBean() {
     }
 
@@ -61,7 +61,7 @@ public class CsvToBean<T> {
             PropertyDescriptor prop = mapper.findDescriptor(col);
             if (null != prop) {
                 Object obj = convertValue(value, prop);
-                prop.getWriteMethod().invoke(bean, new Object[] {obj});
+                prop.getWriteMethod().invoke(bean, obj);
             }
         }
         return bean;
