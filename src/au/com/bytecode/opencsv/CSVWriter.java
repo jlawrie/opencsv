@@ -16,19 +16,9 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.math.BigDecimal;
-import java.sql.Clob;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -203,6 +193,8 @@ public class CSVWriter implements Closeable {
      * @param rs the recordset to write
      * @param includeColumnNames true if you want column names in the output, false otherwise
      *
+     * @throws java.io.IOException thrown by getColumnValue
+     * @throws java.sql.SQLException thrown by getColumnValue
      */
     public void writeAll(java.sql.ResultSet rs, boolean includeColumnNames)  throws SQLException, IOException {
     	
@@ -235,9 +227,10 @@ public class CSVWriter implements Closeable {
 		switch (colType)
 		{
 			case Types.BIT:
-				Object bit = rs.getObject(colIndex);
-				if (bit != null) {
-					value = String.valueOf(bit);
+            case Types.JAVA_OBJECT:
+				Object obj = rs.getObject(colIndex);
+				if (obj != null) {
+					value = String.valueOf(obj);
 				}
 			break;
 			case Types.BOOLEAN:
@@ -276,17 +269,11 @@ public class CSVWriter implements Closeable {
 					value = Integer.toString(intValue);
 				}
 			break;
-			case Types.JAVA_OBJECT:
-				Object obj = rs.getObject(colIndex);
-				if (obj != null) {
-					value = String.valueOf(obj);
-				}
-			break;
 			case Types.DATE:
 				java.sql.Date date = rs.getDate(colIndex);
 				if (date != null) {
 				    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-					value = dateFormat.format(date);;
+					value = dateFormat.format(date);
 				}
 			break;
 			case Types.TIME:
@@ -326,7 +313,7 @@ public class CSVWriter implements Closeable {
 		StringBuilder sb = new StringBuilder( (int) c.length());
 		Reader r = c.getCharacterStream();
 		char[] cbuf = new char[2048];
-		int n = 0;
+		int n;
 		while ((n = r.read(cbuf, 0, cbuf.length)) != -1) {
 			if (n > 0) {
 				sb.append(cbuf, 0, n);
