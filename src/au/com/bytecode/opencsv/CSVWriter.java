@@ -397,7 +397,7 @@ public class CSVWriter implements Closeable {
      *
      */
     public void close() throws IOException {
-        pw.flush();
+        flush();
         pw.close();
         rawWriter.close();
     }

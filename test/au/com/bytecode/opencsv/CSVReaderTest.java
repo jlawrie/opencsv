@@ -143,26 +143,7 @@ public class CSVReaderTest extends TestCase {
 		assertEquals("a", nextLine[0]);
 	}
 	
-	/**
-	 * Tests quotes in the middle of an element.
-	 * 
-	 * @throws IOException if bad things happen
-	 */
-	@Test
-	public void testParsedLineWithInternalQuota() throws IOException {
 
-		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
-
-		sb.append("a,123\"4\"567,c").append("\n");// a,123"4",c
-
-		CSVReader c = new CSVReader(new StringReader(sb.toString()));
-
-		String[] nextLine = c.readNext();
-		assertEquals(3, nextLine.length);
-
-		assertEquals("123\"4\"567", nextLine[1]);
-
-	}
 	
 	/**
 	 * Test a normal non quoted line with three elements
@@ -186,51 +167,8 @@ public class CSVReaderTest extends TestCase {
 
 	}
 
-	/**
-	 * Test a line where one of the elements is a single Double quote "
-	 * @throws IOException
-	 */
-	@Test
-	public void testADoubleQuoteAsDataElement() throws IOException {
-
-		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
-
-		sb.append("a,\"\"\"\",c").append("\n");// a,"""",c
-
-		CSVReader c = new CSVReader(new StringReader(sb.toString()));
-
-		String[] nextLine = c.readNext();
-		assertEquals(3, nextLine.length);
-		
-		assertEquals("a", nextLine[0]);
-		assertEquals(1, nextLine[1].length());
-		assertEquals("\"", nextLine[1]);
-		assertEquals("c", nextLine[2]);
-
-	}
 	
-	/**
-	 * Test a line where one of the elements is a single Double quote "
-	 * @throws IOException
-	 */
-	@Test
-	public void testEscapedDoubleQuoteAsDataElement() throws IOException {
-		 
-		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
 
-		sb.append("\"test\",\"this,test,is,good\",\"\\\"test\\\"\",\"\\\"quote\\\"\"").append("\n"); // "test","this,test,is,good","\"test\",\"quote\""
-
-		CSVReader c = new CSVReader(new StringReader(sb.toString()));
-
-		String[] nextLine = c.readNext();
-		assertEquals(4, nextLine.length);
-		
-		assertEquals("test", nextLine[0]);
-		assertEquals("this,test,is,good", nextLine[1]);
-		assertEquals("\"test\"", nextLine[2]);
-		assertEquals("\"quote\"", nextLine[3]);
-
-	}
 	
 	/**
 	 * Same as testADoubleQuoteAsDataElement but I changed the quotechar to a 
@@ -280,59 +218,7 @@ public class CSVReaderTest extends TestCase {
 
 	}
 	
-	/**
-	 * Test issue 2263439 where an escaped quote was causing the parse to fail.  
-	 * 
-	 * Special thanks to Chris Morris for fixing this (id 1979054)
-	 * @throws IOException 
-	 * 
-	 */
-	@Test
-	public void testIssue2263439() throws IOException {
-		
-		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
 
-		sb.append("865,0,'AmeriKKKa\\'s_Most_Wanted','',294,0,0,0.734338696798625,'20081002052147',242429208,18448").append("\n");
-
-		CSVReader c = new CSVReader(new StringReader(sb.toString()), ',', '\'');
-
-		String[] nextLine = c.readNext();
-
-		assertEquals(11, nextLine.length);
-		
-		assertEquals("865", nextLine[0]);
-		assertEquals("0", nextLine[1]);
-		assertEquals("AmeriKKKa's_Most_Wanted", nextLine[2]);
-		assertEquals("", nextLine[3]);
-		assertEquals("18448", nextLine[10]);
-		
-	}
-	
-	/**
-	 * Test issue 2859181 where an escaped character before a character
-	 * that did not need escaping was causing the parse to fail.  
-	 * 
-	 * @throws IOException 
-	 * 
-	 */
-	@Test
-	public void testIssue2859181() throws IOException {
-		
-		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
-
-		sb.append("field1;\\=field2;\"\"\"field3\"\"\"").append("\n");
-
-		CSVReader c = new CSVReader(new StringReader(sb.toString()), ';', CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER);
-
-		String[] nextLine = c.readNext();
-
-		assertEquals(3, nextLine.length);
-		
-		assertEquals("field1", nextLine[0]);
-		assertEquals("=field2", nextLine[1]);
-		assertEquals("\"field3\"", nextLine[2]);
-		
-	}
 	
 	@Test
 	public void testEscapedQuote() throws IOException {
@@ -416,35 +302,6 @@ public class CSVReaderTest extends TestCase {
 
 	}
 	
-	/**
-	 * Test issue 2726363
-	 * 
-	 * Data given:
-	 * 
-	 *	"804503689","London",""London""shop","address","116.453182","39.918884"
-	 *	"453074125","NewYork","brief","address"","121.514683","31.228511"
-	 */
-	@Test
-	public void testIssue2726363()throws IOException {
-
-		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
-
-		sb.append("\"804503689\",\"London\",\"\"London\"shop\",\"address\",\"116.453182\",\"39.918884\"").append("\n"); 
-	
-		CSVReader c = new CSVReader(new StringReader(sb.toString()));
-
-		String[] nextLine = c.readNext();
-		assertEquals(6, nextLine.length);
-
-
-		assertEquals("804503689", nextLine[0]);
-		assertEquals("London", nextLine[1]);
-		assertEquals("\"London\"shop", nextLine[2]);
-		assertEquals("address", nextLine[3]);
-		assertEquals("116.453182", nextLine[4]);
-		assertEquals("39.918884", nextLine[5]);
-
-	}
 	
 	/**
 	 * The Test Runner for commandline use.

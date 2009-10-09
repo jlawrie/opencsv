@@ -41,7 +41,7 @@ public class CSVParser {
     /** The default separator to use if none is supplied to the constructor. */
     public static final char DEFAULT_SEPARATOR = ',';
 
-    public static final int INITIAL_READ_SIZE = 64;
+    public static final int INITIAL_READ_SIZE = 128;
 
     /**
      * The default quote character to use if none is supplied to the
@@ -121,6 +121,7 @@ public class CSVParser {
      * 
      * @param nextLine
      *            the string to parse
+     * @param multi
      * @return the comma-tokenized list of elements, or null if nextLine is null
      * @throws IOException if bad things happen during the read
      */
