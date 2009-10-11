@@ -16,14 +16,15 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-public class CSVReaderTest extends TestCase {
+public class CSVReaderTest {
 
 	CSVReader csvr;
 
@@ -32,7 +33,7 @@ public class CSVReaderTest extends TestCase {
 	 * Setup the test.
 	 */
 	@Before
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
 		sb.append("a,b,c").append("\n");   // standard case
 		sb.append("a,\"b,b,b\",c").append("\n");  // quoted elements
@@ -119,9 +120,19 @@ public class CSVReaderTest extends TestCase {
 
 		nextLine = c.readNext();
 		assertEquals(3, nextLine.length);
-
-		
 	}
+
+    @Test
+    public void parseQuotedStringWithDefinedSeperator() throws IOException {
+        StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+		sb.append("a\tb\tc").append("\n");   // tab separated case
+
+		CSVReader c = new CSVReader(new StringReader(sb.toString()), '\t');
+
+		String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+	
+    }
 	
 	/**
 	 * Tests option to skip the first few lines of a file.
@@ -300,17 +311,6 @@ public class CSVReaderTest extends TestCase {
 		assertEquals("1234567", nextLine[1]);
 		assertEquals("c", nextLine[2]);
 
-	}
-	
-	
-	/**
-	 * The Test Runner for commandline use.
-	 * 
-	 * @param args
-	 *            no args required
-	 */
-	public static void main(String args[]) {
-		junit.textui.TestRunner.run(CSVReaderTest.class);
 	}
 
 }

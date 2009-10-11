@@ -6,14 +6,14 @@ package au.com.bytecode.opencsv;
  * Time: 9:56:48 PM
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
 public class CSVParserTest{
+
     CSVParser csvParser;
 
     @Before
@@ -31,16 +31,6 @@ public class CSVParserTest{
         assertEquals(" test.", nextItem[3]);
     }
 
-    @Test
-    public void parseSimpleStringWithMulti() throws IOException {
-
-        String[] nextLine = csvParser.parseLineMulti("a,b,c");
-        assertEquals(3, nextLine.length);
-		assertEquals("a", nextLine[0]);
-		assertEquals("b", nextLine[1]);
-		assertEquals("c", nextLine[2]);
-        assertFalse(csvParser.isPending());
-    }
 
     @Test
     public void parseSimpleString() throws IOException {
@@ -165,7 +155,7 @@ public class CSVParserTest{
 
     @Test
     public void parseTrickyString() throws IOException {
-        String[] nextLine = csvParser.parseLineMulti("\"a\nb\",b,\"\nd\",e\n");
+        String[] nextLine = csvParser.parseLine("\"a\nb\",b,\"\nd\",e\n");
 		assertEquals(4, nextLine.length);
         assertEquals("a\nb", nextLine[0]);
         assertEquals("b", nextLine[1]);
@@ -186,7 +176,7 @@ public class CSVParserTest{
 
         String testString = setUpMultiLineInsideQuotes();
 
-		String[] nextLine = csvParser.parseLineMulti(testString);
+		String[] nextLine = csvParser.parseLine(testString);
         assertEquals(2, nextLine.length);
 		assertEquals("Small test", nextLine[0]);
         assertEquals("This is a test across \ntwo lines.", nextLine[1]);
@@ -264,5 +254,87 @@ public class CSVParserTest{
     @Test(expected=IOException.class)
     public void anIOExceptionThrownifStringEndsInsideAQuotedString() throws IOException {
         String[] nextLine = csvParser.parseLine("This,is a \"bad line to parse.");
+
+
     }
+
+    @Test
+    public void parseLineMultiAllowsQuotesAcrossMultipleLines() throws IOException {
+        String[] nextLine = csvParser.parseLineMulti("This,\"is a \"good\" line\\\\ to parse");
+
+        assertEquals(1, nextLine.length);
+        assertEquals("This", nextLine[0]);
+        assertTrue(csvParser.isPending());
+
+        nextLine = csvParser.parseLineMulti("because we are using parseLineMulti.\"");
+
+        assertEquals(1, nextLine.length);
+        assertEquals("is a \"good\" line\\ to parse\nbecause we are using parseLineMulti.", nextLine[0]);
+        assertFalse(csvParser.isPending());
+    }
+
+    @Test
+    public void pendingIsClearedAfterCallToParseLine() throws IOException {
+        String[] nextLine = csvParser.parseLineMulti("This,\"is a \"good\" line\\\\ to parse");
+
+        assertEquals(1, nextLine.length);
+        assertEquals("This", nextLine[0]);
+        assertTrue(csvParser.isPending());
+
+        nextLine = csvParser.parseLine("because we are using parseLineMulti.");
+
+        assertEquals(1, nextLine.length);
+        assertEquals("because we are using parseLineMulti.", nextLine[0]);
+        assertFalse(csvParser.isPending());
+    }
+
+    @Test
+    public void returnPendingIfNullIsPassedIntoParseLineMulti() throws IOException {
+        String[] nextLine = csvParser.parseLineMulti("This,\"is a \"goo\\d\" line\\\\ to parse\\");
+
+        assertEquals(1, nextLine.length);
+        assertEquals("This", nextLine[0]);
+        assertTrue(csvParser.isPending());
+
+        nextLine = csvParser.parseLineMulti(null);
+
+        assertEquals(1, nextLine.length);
+        assertEquals("is a \"good\" line\\ to parse\n", nextLine[0]);
+        assertFalse(csvParser.isPending());
+    }
+
+    @Test
+    public void returnNullWhenNullPassedIn() throws IOException {
+        String[] nextLine = csvParser.parseLine(null);
+        assertNull(nextLine);
+    }
+
+        private static final String ESCAPE_TEST_STRING = "\\\\1\\2\\\"3\\"; // \\1\2\"\
+
+    @Test
+    public void validateEscapeStringBeforeRealTest(){
+        assertNotNull(ESCAPE_TEST_STRING);
+        assertEquals(9, ESCAPE_TEST_STRING.length());
+    }
+
+    @Test
+    public void whichCharactersAreEscapable(){
+        assertTrue(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, true, 0));
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, false, 0));
+        // Second character is not escapable because there is a non quote or non slash after it. 
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, true, 1));
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, false, 1));
+        // Fourth character is not escapable because there is a non quote or non slash after it.
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, true, 3));
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, false, 3));
+
+        assertTrue(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, true, 5));
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, false, 5));
+
+        int lastChar = ESCAPE_TEST_STRING.length() - 1;
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, true, lastChar));
+        assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, false, lastChar));
+
+    }
+
 }
