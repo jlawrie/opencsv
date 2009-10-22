@@ -362,7 +362,7 @@ public class CSVWriter implements Closeable {
 	    return line.indexOf(quotechar) != -1 || line.indexOf(escapechar) != -1;
     }
 
-	private StringBuilder processLine(String nextElement)
+	protected StringBuilder processLine(String nextElement)
     {
 		StringBuilder sb = new StringBuilder(INITIAL_STRING_SIZE);
 	    for (int j = 0; j < nextElement.length(); j++) {
