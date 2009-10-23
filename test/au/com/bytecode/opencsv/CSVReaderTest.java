@@ -16,8 +16,7 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -87,9 +86,61 @@ public class CSVReaderTest {
 		assertEquals(4, nextLine.length);
 		
 		//test end of stream
-		assertEquals(null, csvr.readNext());
+		assertNull(csvr.readNext());
 
 	}
+
+    @Test
+    public void testParseLineStrictQuote() throws IOException {
+        StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+		sb.append("a,b,c").append("\n");   // standard case
+		sb.append("a,\"b,b,b\",c").append("\n");  // quoted elements
+		sb.append(",,").append("\n"); // empty elements
+		sb.append("a,\"PO Box 123,\nKippax,ACT. 2615.\nAustralia\",d.\n");
+		sb.append("\"Glen \"\"The Man\"\" Smith\",Athlete,Developer\n"); // Test quoted quote chars
+		sb.append("\"\"\"\"\"\",\"test\"\n"); // """""","test"  representing:  "", test
+		sb.append("\"a\nb\",b,\"\nd\",e\n");
+		csvr = new CSVReader(new StringReader(sb.toString()), ',', '\"', true);
+        
+        // test normal case
+		String[] nextLine = csvr.readNext();
+		assertEquals("", nextLine[0]);
+		assertEquals("", nextLine[1]);
+		assertEquals("", nextLine[2]);
+
+		// test quoted commas
+		nextLine = csvr.readNext();
+		assertEquals("", nextLine[0]);
+		assertEquals("b,b,b", nextLine[1]);
+		assertEquals("", nextLine[2]);
+
+		// test empty elements
+		nextLine = csvr.readNext();
+		assertEquals(3, nextLine.length);
+		
+		// test multiline quoted
+		nextLine = csvr.readNext();
+		assertEquals(3, nextLine.length);
+		
+		// test quoted quote chars
+		nextLine = csvr.readNext();
+		assertEquals("Glen \"The Man\" Smith", nextLine[0]);
+		
+		nextLine = csvr.readNext();
+		assertTrue(nextLine[0].equals("\"\"")); // check the tricky situation
+		assertTrue(nextLine[1].equals("test")); // make sure we didn't ruin the next field..
+		
+		nextLine = csvr.readNext();
+		assertEquals(4, nextLine.length);
+        assertEquals(nextLine[0], "a\nb");
+        assertEquals(nextLine[1], "");
+        assertEquals(nextLine[2], "\nd");
+        assertEquals(nextLine[3], "");
+		
+		//test end of stream
+		assertNull(csvr.readNext());
+    }
+
 
 	/**
 	 * Test parsing to a list.
@@ -155,6 +206,27 @@ public class CSVReaderTest {
 	}
 	
 
+    /**
+	 * Tests option to skip the first few lines of a file.
+	 *
+	 * @throws IOException if bad things happen
+	 */
+	@Test
+	public void testSkippingLinesWithDifferentEscape() throws IOException {
+
+		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+		sb.append("Skip this line?t with tab").append("\n");   // should skip this
+		sb.append("And this line too").append("\n");   // and this
+		sb.append("a\t'b\tb\tb'\t'c'").append("\n");  // single quoted elements
+		CSVReader c = new CSVReader(new StringReader(sb.toString()), '\t', '\'', '?', 2);
+
+		String[] nextLine = c.readNext();
+
+		assertEquals(3, nextLine.length);
+
+		assertEquals("a", nextLine[0]);
+        assertEquals("c", nextLine[2]);
+	}
 	
 	/**
 	 * Test a normal non quoted line with three elements

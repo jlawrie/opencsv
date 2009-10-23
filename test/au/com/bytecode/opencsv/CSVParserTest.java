@@ -183,6 +183,42 @@ public class CSVParserTest{
         assertFalse(csvParser.isPending());
     }
 
+    @Test
+    public void testStrictQuoteSimple() throws IOException {
+        csvParser = new CSVParser (',', '\"', '\\', true);
+        String testString = "\"a\",\"b\",\"c\"";
+
+        String[] nextLine = csvParser.parseLine(testString);
+        assertEquals(3, nextLine.length);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
+    }
+
+    @Test
+    public void testStrictQuoteWithSpacesAndTabs() throws IOException {
+        csvParser = new CSVParser (',', '\"', '\\', true);
+        String testString = " \t      \"a\",\"b\"      \t       ,   \"c\"   ";
+
+        String[] nextLine = csvParser.parseLine(testString);
+        assertEquals(3, nextLine.length);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
+    }
+
+    @Test
+    public void testStrictQuoteWithGarbage() throws IOException {
+        csvParser = new CSVParser (',', '\"', '\\', true);
+        String testString = "abc',!@#\",\\\"\"   xyz,";
+
+        String[] nextLine = csvParser.parseLine(testString);
+        assertEquals(3, nextLine.length);
+        assertEquals("", nextLine[0]);
+        assertEquals(",\"", nextLine[1]);
+        assertEquals("", nextLine[2]);
+    }
+
     	/**
 	 * Test issue 2263439 where an escaped quote was causing the parse to fail.
 	 *

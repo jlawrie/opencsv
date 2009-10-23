@@ -35,7 +35,9 @@ public class CSVParser {
     private final char quotechar;
     
     private final char escape;
-    
+
+    private final boolean strictQuotes;
+
     private String pending;
     
     /** The default separator to use if none is supplied to the constructor. */
@@ -55,6 +57,12 @@ public class CSVParser {
      * constructor.
      */
     public static final char DEFAULT_ESCAPE_CHARACTER = '\\';
+
+   /**
+    * The default strict quote behavior to use if none is supplied to the
+    * constructor
+    */
+    public static final boolean DEFAULT_STRICT_QUOTES = false;
     
     /**
      * Constructs CSVParser using a comma for the separator.
@@ -85,7 +93,6 @@ public class CSVParser {
         this(separator, quotechar, DEFAULT_ESCAPE_CHARACTER);
     }
 
-    
     /**
      * Constructs CSVReader with supplied separator and quote char.
      * @param separator
@@ -96,9 +103,26 @@ public class CSVParser {
      *            the character to use for escaping a separator or quote
      */
     public CSVParser(char separator, char quotechar, char escape) {
+        this(separator, quotechar, escape, DEFAULT_STRICT_QUOTES);
+    }
+
+    /**
+     * Constructs CSVReader with supplied separator and quote char.
+     * Allows setting the "strict quotes" flag
+     * @param separator
+     *            the delimiter to use for separating entries
+     * @param quotechar
+     *            the character to use for quoted elements
+     * @param escape
+     *            the character to use for escaping a separator or quote
+     * @param strictQuotes
+     *            if true, characters outside the quotes are ignored
+     */
+    public CSVParser(char separator, char quotechar, char escape, boolean strictQuotes) {
         this.separator = separator;
         this.quotechar = quotechar;
         this.escape = escape;
+        this.strictQuotes = strictQuotes;
     }
     
     /**
@@ -164,19 +188,22 @@ public class CSVParser {
         		}else{
         			inQuotes = !inQuotes;
         			// the tricky case of an embedded quote in the middle: a,bc"d"ef,g
-        			if(i>2 //not on the beginning of the line
-        					&& nextLine.charAt(i-1) != this.separator //not at the beginning of an escape sequence 
-        					&& nextLine.length()>(i+1) &&
-        					nextLine.charAt(i+1) != this.separator //not at the	end of an escape sequence
-        			){
-        				sb.append(c);
-        			}
+                    if (!strictQuotes) {
+                        if(i>2 //not on the beginning of the line
+                                && nextLine.charAt(i-1) != this.separator //not at the beginning of an escape sequence
+                                && nextLine.length()>(i+1) &&
+                                nextLine.charAt(i+1) != this.separator //not at the	end of an escape sequence
+                        ){
+                            sb.append(c);
+                        }
+                    }
         		}
         	} else if (c == separator && !inQuotes) {
         		tokensOnThisLine.add(sb.toString());
         		sb = new StringBuilder(INITIAL_READ_SIZE); // start work on next token
         	} else {
-        		sb.append(c);
+                if (!strictQuotes || inQuotes)
+                    sb.append(c);
         	}
         }
         // line is done - check status
