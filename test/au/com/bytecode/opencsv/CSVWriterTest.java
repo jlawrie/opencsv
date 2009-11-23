@@ -54,7 +54,7 @@ public class CSVWriterTest {
         StringWriter sw = new StringWriter();
         CSVWriter csvw = new CSVWriter(sw,',','\'');
         csvw.writeNext(null);
-        assertTrue(sw.toString().isEmpty());
+        assertEquals(0, sw.toString().length());
     }
 
     /**
