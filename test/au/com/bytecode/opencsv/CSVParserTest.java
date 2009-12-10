@@ -6,11 +6,12 @@ package au.com.bytecode.opencsv;
  * Time: 9:56:48 PM
  */
 
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static org.junit.Assert.*;
 
 public class CSVParserTest{
 
@@ -252,7 +253,7 @@ public class CSVParserTest{
 	@Test
 	public void testIssue2859181() throws IOException {
         csvParser = new CSVParser(';');
-		String[] nextLine = csvParser.parseLine("field1;\\=field2;\"\"\"field3\"\"\"");
+		String[] nextLine = csvParser.parseLine("field1;\\=field2;\"\"\"field3\"\"\""); // field1;\=field2;"""field3"""
 
 		assertEquals(3, nextLine.length);
 

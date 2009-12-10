@@ -402,4 +402,12 @@ public class CSVWriter implements Closeable {
         rawWriter.close();
     }
 
+    /**
+     *  Checks to see if the there has been an error in the printstream. 
+     */
+    public boolean checkError() {
+        return pw.checkError();
+    }
+
+
 }
