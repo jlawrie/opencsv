@@ -16,12 +16,13 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
+
+import static org.junit.Assert.*;
 
 public class CSVReaderTest {
 
@@ -132,10 +133,10 @@ public class CSVReaderTest {
 		
 		nextLine = csvr.readNext();
 		assertEquals(4, nextLine.length);
-        assertEquals(nextLine[0], "a\nb");
-        assertEquals(nextLine[1], "");
-        assertEquals(nextLine[2], "\nd");
-        assertEquals(nextLine[3], "");
+        assertEquals("a\nb", nextLine[0]);
+        assertEquals("", nextLine[1]);
+        assertEquals("\nd", nextLine[2]);
+        assertEquals("", nextLine[3]);
 		
 		//test end of stream
 		assertNull(csvr.readNext());

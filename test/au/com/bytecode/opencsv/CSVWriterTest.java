@@ -16,12 +16,14 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class CSVWriterTest {
 
@@ -44,7 +46,7 @@ public class CSVWriterTest {
     
     private String invokeNoEscapeWriter(String[] args) throws IOException {
         StringWriter sw = new StringWriter();
-        CSVWriter csvw = new CSVWriter(sw,',','\'', CSVWriter.NO_ESCAPE_CHARACTER);
+        CSVWriter csvw = new CSVWriter(sw,CSVWriter.DEFAULT_SEPARATOR,'\'', CSVWriter.NO_ESCAPE_CHARACTER);
         csvw.writeNext(args);
         return sw.toString();
     }
@@ -86,6 +88,20 @@ public class CSVWriterTest {
         output = invokeWriter(multiline);
         assertEquals("'This is a \n multiline entry','so is \n this'\n", output);
 
+
+        // test quoted line
+        String[] quoteLine = { "This is a \" multiline entry", "so is \n this" };
+        output = invokeWriter(quoteLine);
+        assertEquals("'This is a \"\" multiline entry','so is \n this'\n", output);
+
+    }
+
+    @Test
+    public void parseLineWithBothEscapeAndQuoteChar() throws IOException {
+        // test quoted line
+        String[] quoteLine = { "This is a 'multiline' entry", "so is \n this" };
+        String output = invokeWriter(quoteLine);
+        assertEquals("'This is a \"'multiline\"' entry','so is \n this'\n", output);
     }
 
     /**
@@ -117,12 +133,15 @@ public class CSVWriterTest {
         output = invokeNoEscapeWriter(multiline);
         assertEquals("'This is a \n multiline entry','so is \n this'\n", output);
 
-        // test quoted line
-        String[] quoteLine = { "This is a \" multiline entry", "so is \n this" };
-        output = invokeNoEscapeWriter(quoteLine);
-        assertEquals("'This is a \" multiline entry','so is \n this'\n", output);
-
     }
+
+    @Test
+    public void parseLineWithNoEscapeCharAndQuotes() throws IOException {
+        String[] quoteLine = { "This is a \" 'multiline' entry", "so is \n this" };
+        String output = invokeNoEscapeWriter(quoteLine);
+        assertEquals("'This is a \" 'multiline' entry','so is \n this'\n", output);
+    }
+
 
     /**
      * Test parsing from to a list.
@@ -307,6 +326,50 @@ public class CSVWriterTest {
         
         assertTrue(result.endsWith("\r"));
     	
+    }
+
+    @Test
+    public void testResultSetWithHeaders() throws SQLException, IOException {
+        String[] header = {"Foo","Bar","baz"};
+        String[] value = {"v1", "v2", "v3"};
+
+        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
+
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw);
+        csvw.setResultService(mockHelperService);
+
+        MockResultSet rs = new MockResultSet();
+        rs.setNumberOfResults(1);
+
+        csvw.writeAll(rs, true); // don't need a result set since I am mocking the result.
+        assertFalse(csvw.checkError());
+        String result = sw.toString();
+
+        assertNotNull(result);
+        assertEquals("\"Foo\",\"Bar\",\"baz\"\n\"v1\",\"v2\",\"v3\"\n", result);
+    }
+
+    @Test
+    public void testResultSetWithoutHeaders() throws SQLException, IOException {
+        String[] header = {"Foo","Bar","baz"};
+        String[] value = {"v1", "v2", "v3"};
+
+        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
+
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw);
+        csvw.setResultService(mockHelperService);
+
+        MockResultSet rs = new MockResultSet();
+        rs.setNumberOfResults(1);
+
+        csvw.writeAll(rs, false); // don't need a result set since I am mocking the result.
+        assertFalse(csvw.checkError());
+        String result = sw.toString();
+
+        assertNotNull(result);
+        assertEquals("\"v1\",\"v2\",\"v3\"\n", result);
     }
 
 }

@@ -16,15 +16,15 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 public class OpencsvTest {
 
@@ -47,9 +47,9 @@ public class OpencsvTest {
 		final String[][] data = new String[][]{{"hello, a test", "one nested \" test"}, {"\"\"", "test", null, "8"}};
 
 		writer = new CSVWriter(new FileWriter(tempFile));
-		for (int i = 0; i < data.length; i++) {
-			writer.writeNext(data[i]);
-		}
+        for (String[] aData : data) {
+            writer.writeNext(aData);
+        }
 		writer.close();
 
 		reader = new CSVReader(new FileReader(tempFile));

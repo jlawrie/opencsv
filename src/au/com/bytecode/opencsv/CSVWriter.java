@@ -16,10 +16,12 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import java.io.*;
-import java.math.BigDecimal;
-import java.sql.*;
-import java.text.SimpleDateFormat;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -64,6 +66,8 @@ public class CSVWriter implements Closeable {
     
     /** Default line terminator uses platform encoding. */
     public static final String DEFAULT_LINE_END = "\n";
+
+    private ResultSetHelper resultService = new ResultSetHelperService();
     
     /**
      * Constructs CSVWriter using a comma for the separator.
@@ -173,16 +177,10 @@ public class CSVWriter implements Closeable {
 		}
     }
 
-    protected void writeColumnNames(ResultSetMetaData metadata)
+    protected void writeColumnNames(ResultSet rs)
     	throws SQLException {
-    	
-    	int columnCount =  metadata.getColumnCount();
-    	
-    	String[] nextLine = new String[columnCount];
-		for (int i = 0; i < columnCount; i++) {
-			nextLine[i] = metadata.getColumnName(i + 1);
-		}
-    	writeNext(nextLine);
+
+    	writeNext(resultService.getColumnNames(rs));
     }
     
     /**
@@ -198,129 +196,17 @@ public class CSVWriter implements Closeable {
      */
     public void writeAll(java.sql.ResultSet rs, boolean includeColumnNames)  throws SQLException, IOException {
     	
-    	ResultSetMetaData metadata = rs.getMetaData();
-    	
     	
     	if (includeColumnNames) {
-			writeColumnNames(metadata);
+			writeColumnNames(rs);
 		}
-
-    	int columnCount =  metadata.getColumnCount();
     	
     	while (rs.next())
     	{
-        	String[] nextLine = new String[columnCount];
-        	
-        	for (int i = 0; i < columnCount; i++) {
-				nextLine[i] = getColumnValue(rs, metadata.getColumnType(i + 1), i + 1);
-			}
-        	
-    		writeNext(nextLine);
+    		writeNext(resultService.getColumnValues(rs));
     	}
     }
-    
-    private static String getColumnValue(ResultSet rs, int colType, int colIndex)
-    		throws SQLException, IOException {
 
-    	String value = "";
-    	
-		switch (colType)
-		{
-			case Types.BIT:
-            case Types.JAVA_OBJECT:
-				Object obj = rs.getObject(colIndex);
-				if (obj != null) {
-					value = String.valueOf(obj);
-				}
-			break;
-			case Types.BOOLEAN:
-				boolean b = rs.getBoolean(colIndex);
-				if (!rs.wasNull()) {
-					value = Boolean.valueOf(b).toString();
-				}
-			break;
-			case Types.CLOB:
-				Clob c = rs.getClob(colIndex);
-				if (c != null) {
-					value = read(c);
-				}
-			break;
-			case Types.BIGINT:
-				long lv = rs.getLong(colIndex);
-				if (!rs.wasNull()) {
-					value = Long.toString(lv);
-				}
-				break;
-			case Types.DECIMAL:
-			case Types.DOUBLE:
-			case Types.FLOAT:
-			case Types.REAL:
-			case Types.NUMERIC:
-				BigDecimal bd = rs.getBigDecimal(colIndex);
-				if (bd != null) {
-					value = bd.toString();
-				}
-			break;
-			case Types.INTEGER:
-			case Types.TINYINT:
-			case Types.SMALLINT:
-				int intValue = rs.getInt(colIndex);
-				if (!rs.wasNull()) {
-					value = Integer.toString(intValue);
-				}
-			break;
-			case Types.DATE:
-				java.sql.Date date = rs.getDate(colIndex);
-				if (date != null) {
-				    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-					value = dateFormat.format(date);
-				}
-			break;
-			case Types.TIME:
-				Time t = rs.getTime(colIndex);
-				if (t != null) {
-					value = t.toString();
-				}
-			break;
-			case Types.TIMESTAMP:
-				Timestamp tstamp = rs.getTimestamp(colIndex);
-				if (tstamp != null) {
-					SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-					value = timeFormat.format(tstamp);
-				}
-			break;
-			case Types.LONGVARCHAR:
-			case Types.VARCHAR:
-			case Types.CHAR:
-				value = rs.getString(colIndex);
-			break;
-			default:
-				value = "";
-		}
-
-		
-		if (value == null)
-		{
-			value = "";
-		}
-		
-		return value;
-    	
-    }
-
-	private static String read(Clob c) throws SQLException, IOException
-	{
-		StringBuilder sb = new StringBuilder( (int) c.length());
-		Reader r = c.getCharacterStream();
-		char[] cbuf = new char[2048];
-		int n;
-		while ((n = r.read(cbuf, 0, cbuf.length)) != -1) {
-			if (n > 0) {
-				sb.append(cbuf, 0, n);
-			}
-		}
-		return sb.toString();
-	}
     
     /**
      * Writes the next line to the file.
@@ -409,5 +295,8 @@ public class CSVWriter implements Closeable {
         return pw.checkError();
     }
 
+    public void setResultService(ResultSetHelper resultService) {
+        this.resultService = resultService;
+    }
 
 }

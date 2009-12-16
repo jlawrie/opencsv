@@ -125,8 +125,6 @@ public class CSVParserTest{
 	@Test
 	public void testEscapedDoubleQuoteAsDataElement() throws IOException {
 
-		StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
-
 		String[] nextLine = csvParser.parseLine("\"test\",\"this,test,is,good\",\"\\\"test\\\"\",\"\\\"quote\\\"\""); // "test","this,test,is,good","\"test\",\"quote\""
 
 		assertEquals(4, nextLine.length);

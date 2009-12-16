@@ -17,14 +17,12 @@ package au.com.bytecode.opencsv.bean;
  */
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.io.StringReader;
 import java.util.List;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class HeaderColumnNameMappingStrategyTest {
 
@@ -56,7 +54,7 @@ public class HeaderColumnNameMappingStrategyTest {
         List<MockBean> list = csv.parse(strat, new StringReader(s));
         assertNotNull(list);
         assertTrue(list.size() == 2);
-        MockBean bean = (MockBean) list.get(0);
+        MockBean bean = list.get(0);
         assertEquals("kyle", bean.getName());
         assertEquals("abc123456", bean.getOrderNumber());
         assertEquals(123, bean.getNum());
