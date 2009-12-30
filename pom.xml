@@ -6,7 +6,7 @@
 	<packaging>jar</packaging>
 	<version>2.2-SNAPSHOT</version>
 	<name>opencsv</name>
-	<description>A simple library for CVS reading and writing in Java</description>
+	<description>A simple library for reading and writing CSV in Java</description>
 	<url>http://opencsv.sf.net</url>
 	<licenses>
 		<license>
