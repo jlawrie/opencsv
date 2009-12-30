@@ -23,14 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: scott
- * Date: Dec 11, 2009
- * Time: 10:35:35 PM
- * To change this template use File | Settings | File Templates.
+ * 
+ * 
+ *  helper class for processing JDBC ResultSet objects
+ * 
+ * 
  */
 public class ResultSetHelperService implements ResultSetHelper {
     public static final int CLOBBUFFERSIZE = 2048;
+    
+    // note: we want to maintain compatibility with Java 5 VM's
+    // These types don't exist in Java 5
+	private static final int NVARCHAR = -9;
+	private static final int NCHAR = -15; 
+	private static final int LONGNVARCHAR = -16;
+	private static final int NCLOB = 2011;
 
     public String[] getColumnNames(ResultSet rs) throws SQLException {
         List<String> names = new ArrayList<String>();
@@ -109,6 +116,7 @@ public class ResultSetHelperService implements ResultSetHelper {
 				boolean b = rs.getBoolean(colIndex);
 				value = Boolean.valueOf(b).toString();
 			    break;
+			case NCLOB: // todo : use rs.getNClob
 			case Types.CLOB:
 				Clob c = rs.getClob(colIndex);
 				if (c != null) {
@@ -139,6 +147,9 @@ public class ResultSetHelperService implements ResultSetHelper {
 			case Types.TIMESTAMP:
 				value = handleTimestamp(rs.getTimestamp(colIndex));
 			    break;
+			case NVARCHAR: // todo : use rs.getNString
+			case NCHAR: // todo : use rs.getNString
+			case LONGNVARCHAR: // todo : use rs.getNString
 			case Types.LONGVARCHAR:
 			case Types.VARCHAR:
 			case Types.CHAR:
