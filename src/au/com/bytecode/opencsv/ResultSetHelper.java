@@ -20,11 +20,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: scott
- * Date: Dec 11, 2009
- * Time: 7:06:03 AM
- * To change this template use File | Settings | File Templates.
+ * 
+ * 
+ * 
+ * 
+ * 
  */
 public interface ResultSetHelper {
     public String[] getColumnNames(ResultSet rs) throws SQLException;
