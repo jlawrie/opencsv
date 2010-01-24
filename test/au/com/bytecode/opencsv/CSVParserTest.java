@@ -339,6 +339,16 @@ public class CSVParserTest{
     }
 
     @Test
+    public void spacesAtEndOfQuotedStringDoNotCountIfStrictQuotesIsTrue() throws IOException {
+        CSVParser parser = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER, true);
+        String[] nextLine = parser.parseLine("\"Line with\", \"spaces at end\"  ");
+
+        assertEquals(2, nextLine.length);
+        assertEquals("Line with", nextLine[0]);
+        assertEquals("spaces at end", nextLine[1]);
+    }
+
+    @Test
     public void returnNullWhenNullPassedIn() throws IOException {
         String[] nextLine = csvParser.parseLine(null);
         assertNull(nextLine);
