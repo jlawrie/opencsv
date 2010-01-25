@@ -47,9 +47,6 @@ public class HeaderColumnNameMappingStrategy<T> implements MappingStrategy<T> {
         if (null == descriptorMap) descriptorMap = loadDescriptorMap(getType()); //lazy load descriptors
         return descriptorMap.get(name.toUpperCase().trim());
     }
-    protected boolean matches(String name, PropertyDescriptor desc) {
-        return desc.getName().equals(name.trim());
-    }
     
     protected Map<String, PropertyDescriptor> loadDescriptorMap(Class<T> cls) throws IntrospectionException
     {
