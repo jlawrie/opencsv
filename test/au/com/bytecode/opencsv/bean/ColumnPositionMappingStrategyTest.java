@@ -17,25 +17,30 @@ package au.com.bytecode.opencsv.bean;
  */
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.StringReader;
 import java.util.List;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 
 public class ColumnPositionMappingStrategyTest {
+    private ColumnPositionMappingStrategy<MockBean> strat;
 
-	@Test
+    @Before
+    public void setUp() throws Exception {
+        strat = new ColumnPositionMappingStrategy<MockBean>();
+        strat.setType(MockBean.class);
+    }
+
+    @Test
     public void testParse() {
         String s = "" +
                 "kyle,123456,emp123\n" +
                 "jimmy,abcnum,cust09878";
-        ColumnPositionMappingStrategy<MockBean> strat = new ColumnPositionMappingStrategy<MockBean>();
-        strat.setType(MockBean.class);
+
         String[] columns = new String[] {"name", "orderNumber", "id"};
         strat.setColumnMapping(columns);
 
@@ -47,6 +52,45 @@ public class ColumnPositionMappingStrategyTest {
         assertEquals("kyle", bean.getName());
         assertEquals("123456", bean.getOrderNumber());
         assertEquals("emp123", bean.getId());
+    }
+
+    @Test
+    public void testGetColumnMapping()
+    {
+        String[] columnMapping = strat.getColumnMapping();
+        assertNotNull(columnMapping);
+        assertEquals(0, columnMapping.length);
+
+        String[] columns = new String[] {"name", "orderNumber", "id"};
+        strat.setColumnMapping(columns);
+
+        columnMapping = strat.getColumnMapping();
+        assertNotNull(columnMapping);
+        assertEquals(3, columnMapping.length);
+        assertArrayEquals(columns, columnMapping);
+
+    }
+
+    @Test
+    public void testGetColumnNames()
+    {
+
+        String[] columns = new String[] {"name", null, "id"};
+        strat.setColumnMapping(columns);
+
+        assertEquals("name", strat.getColumnName(0));
+        assertEquals(null, strat.getColumnName(1));
+        assertEquals("id", strat.getColumnName(2));
+        assertEquals(null, strat.getColumnName(3));
+    }
+
+    @Test
+    public void getColumnNamesHandlesNull()
+    {
+        strat.setColumnMapping(null);
+
+        assertEquals(null, strat.getColumnName(0));
+        assertEquals(null, strat.getColumnName(1));
     }
 
 }
