@@ -17,24 +17,32 @@ package au.com.bytecode.opencsv.bean;
  */
 
 
+import au.com.bytecode.opencsv.CSVReader;
 import org.junit.Test;
 
+import java.beans.IntrospectionException;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class HeaderColumnNameMappingStrategyTest {
+    private static final String TEST_STRING = "name,orderNumber,num\n" +
+            "kyle,abc123456,123\n" +
+            "jimmy,def098765,456";
 
-	@Test
+
+    private List<MockBean> createTestParseResult() {
+        HeaderColumnNameMappingStrategy<MockBean> strat = new HeaderColumnNameMappingStrategy<MockBean>();
+        strat.setType(MockBean.class);
+        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
+        return csv.parse(strat, new StringReader(TEST_STRING));
+    }
+
+    @Test
     public void testParse() {
-        String s = "name,orderNumber,num\n" +
-                "kyle,abc123456,123\n" +
-                "jimmy,def098765,456";
-        HeaderColumnNameMappingStrategy<MockBean> strat = new HeaderColumnNameMappingStrategy<MockBean>();
-        strat.setType(MockBean.class);
-        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
-        List<MockBean> list = csv.parse(strat, new StringReader(s));
+        List<MockBean> list = createTestParseResult();
         assertNotNull(list);
         assertTrue(list.size() == 2);
         MockBean bean = list.get(0);
@@ -43,15 +51,9 @@ public class HeaderColumnNameMappingStrategyTest {
         assertEquals(123, bean.getNum());
     }
 
-	@Test
+    @Test
     public void testParseWithSpacesInHeader() {
-        String s = "name, orderNumber, num\n" +
-                "kyle, abc123456, 123\n" +
-                "jimmy, def098765,456";
-        HeaderColumnNameMappingStrategy<MockBean> strat = new HeaderColumnNameMappingStrategy<MockBean>();
-        strat.setType(MockBean.class);
-        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
-        List<MockBean> list = csv.parse(strat, new StringReader(s));
+        List<MockBean> list = createTestParseResult();
         assertNotNull(list);
         assertTrue(list.size() == 2);
         MockBean bean = list.get(0);
@@ -59,4 +61,22 @@ public class HeaderColumnNameMappingStrategyTest {
         assertEquals("abc123456", bean.getOrderNumber());
         assertEquals(123, bean.getNum());
     }
+
+    @Test
+    public void verifyColumnNames() throws IOException, IntrospectionException {
+        HeaderColumnNameMappingStrategy<MockBean> strat = new HeaderColumnNameMappingStrategy<MockBean>();
+        strat.setType(MockBean.class);
+        assertNull(strat.getColumnName(0));
+        assertNull(strat.findDescriptor(0));
+
+        StringReader reader = new StringReader(TEST_STRING);
+
+        CSVReader csvReader = new CSVReader(reader);
+        strat.captureHeader(csvReader);
+
+        assertEquals("name", strat.getColumnName(0));
+        assertEquals(strat.findDescriptor(0), strat.findDescriptor("name"));
+        assertTrue(strat.matches("name", strat.findDescriptor("name")));
+    }
+
 }
