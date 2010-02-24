@@ -3,10 +3,10 @@
  */
 package integrationTest.issue2564366;
 
+import au.com.bytecode.opencsv.CSVReader;
+
 import java.io.FileReader;
 import java.io.IOException;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * @author scott

@@ -85,12 +85,27 @@ public class ColumnPositionMappingStrategyTest {
     }
 
     @Test
+    public void testGetColumnNamesArray()
+    {
+
+        String[] columns = new String[] {"name", null, "id"};
+        strat.setColumnMapping(columns);
+        String[] mapping = strat.getColumnMapping();
+
+        assertEquals(3, mapping.length);
+        assertEquals("name", mapping[0]);
+        assertEquals(null, mapping[1]);
+        assertEquals("id", mapping[2]);
+    }
+
+    @Test
     public void getColumnNamesHandlesNull()
     {
         strat.setColumnMapping(null);
 
         assertEquals(null, strat.getColumnName(0));
         assertEquals(null, strat.getColumnName(1));
+        assertNull(strat.getColumnMapping());
     }
 
 }

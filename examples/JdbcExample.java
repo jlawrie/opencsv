@@ -3,10 +3,11 @@
  * 
  */
 
-import java.io.StringWriter;
-import java.sql.*;
-
 import au.com.bytecode.opencsv.CSVWriter;
+
+import java.io.StringWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class JdbcExample
 {

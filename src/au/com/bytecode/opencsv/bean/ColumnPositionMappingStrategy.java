@@ -29,9 +29,9 @@ public class ColumnPositionMappingStrategy<T> extends HeaderColumnNameMappingStr
         return (null != columnMapping && col < columnMapping.length) ? columnMapping[col] : null ;
     }
     public String[] getColumnMapping() {
-        return columnMapping;
+        return columnMapping != null ? columnMapping.clone() : null;
     }
     public void setColumnMapping(String[] columnMapping) {
-        this.columnMapping = columnMapping;
+        this.columnMapping = columnMapping != null ? columnMapping.clone() : null;
     }
 }

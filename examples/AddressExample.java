@@ -1,10 +1,10 @@
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 
 /**
 Copyright 2005 Bytecode Pty Ltd.
