@@ -390,6 +390,15 @@ public class CSVParserTest{
         assertEquals("is", nextItem[1]);
         assertEquals("a test", nextItem[2]);
     }
-    
 
+    @Test
+    public void testIssue2958242WithoutQuotes() throws IOException {
+        CSVParser testParser = new CSVParser('\t');
+        String[] nextItem = testParser.parseLine("zo\"\"har\"\"at\t10-04-1980\t29\tC:\\\\foo.txt");
+        assertEquals(4, nextItem.length);
+        assertEquals("zo\"har\"at", nextItem[0]);
+        assertEquals("10-04-1980", nextItem[1]);
+        assertEquals("29", nextItem[2]);
+        assertEquals("C:\\foo.txt", nextItem[3]);
+    }
 }

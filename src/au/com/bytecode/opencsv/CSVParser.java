@@ -39,6 +39,7 @@ public class CSVParser {
     private final boolean strictQuotes;
 
     private String pending;
+    private boolean inField = false;
 
     private final boolean ignoreLeadingWhiteSpace;
     
@@ -203,16 +204,17 @@ public class CSVParser {
         	
         	char c = nextLine.charAt(i);
         	if (c == this.escape) {
-        		if( isNextCharacterEscapable(nextLine, inQuotes, i) ){
+        		if( isNextCharacterEscapable(nextLine, inQuotes || inField, i) ){
         			sb.append(nextLine.charAt(i+1));
         			i++;
-        		} 
+        		}
         	} else if (c == quotechar) {
-        		if( isNextCharacterEscapedQuote(nextLine, inQuotes, i) ){
+        		if( isNextCharacterEscapedQuote(nextLine, inQuotes || inField, i) ){
         			sb.append(nextLine.charAt(i+1));
         			i++;
         		}else{
         			inQuotes = !inQuotes;
+
         			// the tricky case of an embedded quote in the middle: a,bc"d"ef,g
                     if (!strictQuotes) {
                         if(i>2 //not on the beginning of the line
@@ -230,12 +232,16 @@ public class CSVParser {
                         }
                     }
         		}
+                inField = !inField;
         	} else if (c == separator && !inQuotes) {
         		tokensOnThisLine.add(sb.toString());
         		sb = new StringBuilder(INITIAL_READ_SIZE); // start work on next token
+                inField = false;
         	} else {
-                if (!strictQuotes || inQuotes)
+                if (!strictQuotes || inQuotes){
                     sb.append(c);
+                    inField = true;
+                }
         	}
         }
         // line is done - check status

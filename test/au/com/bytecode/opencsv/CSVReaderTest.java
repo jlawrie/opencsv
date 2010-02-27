@@ -80,8 +80,8 @@ public class CSVReaderTest {
 		assertEquals("Glen \"The Man\" Smith", nextLine[0]);
 		
 		nextLine = csvr.readNext();
-		assertTrue(nextLine[0].equals("\"\"")); // check the tricky situation
-		assertTrue(nextLine[1].equals("test")); // make sure we didn't ruin the next field..
+        assertEquals("\"\"", nextLine[0]); // check the tricky situation
+		assertEquals("test", nextLine[1]); // make sure we didn't ruin the next field..
 		
 		nextLine = csvr.readNext();
 		assertEquals(4, nextLine.length);
