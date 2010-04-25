@@ -52,7 +52,7 @@ public class MockResultSet implements ResultSet {
     public void setMetaData(ResultSetMetaData data) {
         metaData = data;
     }
-    
+
     public boolean next() throws SQLException {
         return numberOfResults-- > 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -88,7 +88,7 @@ public class MockResultSet implements ResultSet {
 
     public long getLong(int i) throws SQLException {
         setLastValueReadNull(columnValues[i-1]);
-        return columnValues[i-1] == null ? 0 : Long.valueOf(columnValues[i-1]);  
+        return columnValues[i-1] == null ? 0 : Long.valueOf(columnValues[i-1]);
     }
 
     public float getFloat(int i) throws SQLException {
@@ -108,7 +108,7 @@ public class MockResultSet implements ResultSet {
     }
 
     public Date getDate(int i) throws SQLException {
-        return columnValues[i-1] == null ? null : new Date(Long.valueOf(columnValues[i-1]));  
+        return columnValues[i-1] == null ? null : new Date(Long.valueOf(columnValues[i-1]));
     }
 
     public Time getTime(int i) throws SQLException {
@@ -234,7 +234,7 @@ public class MockResultSet implements ResultSet {
 
     public BigDecimal getBigDecimal(int i) throws SQLException {
         setLastValueReadNull(columnValues[i-1]);
-        return columnValues[i-1] == null ? null : new BigDecimal(columnValues[i-1]);  
+        return columnValues[i-1] == null ? null : new BigDecimal(columnValues[i-1]);
     }
 
     public BigDecimal getBigDecimal(String s) throws SQLException {
@@ -613,22 +613,6 @@ public class MockResultSet implements ResultSet {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public RowId getRowId(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public RowId getRowId(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateRowId(int i, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateRowId(String s, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public int getHoldability() throws SQLException {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -642,38 +626,6 @@ public class MockResultSet implements ResultSet {
     }
 
     public void updateNString(String s, String s1) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateNClob(int i, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateNClob(String s, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public NClob getNClob(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public NClob getNClob(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public SQLXML getSQLXML(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public SQLXML getSQLXML(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateSQLXML(int i, SQLXML sqlxml) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateSQLXML(String s, SQLXML sqlxml) throws SQLException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
