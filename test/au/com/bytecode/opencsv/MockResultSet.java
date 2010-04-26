@@ -613,22 +613,6 @@ public class MockResultSet implements ResultSet {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public RowId getRowId(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public RowId getRowId(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateRowId(int i, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateRowId(String s, RowId rowId) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public int getHoldability() throws SQLException {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -642,38 +626,6 @@ public class MockResultSet implements ResultSet {
     }
 
     public void updateNString(String s, String s1) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateNClob(int i, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateNClob(String s, NClob nClob) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public NClob getNClob(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public NClob getNClob(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public SQLXML getSQLXML(int i) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public SQLXML getSQLXML(String s) throws SQLException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateSQLXML(int i, SQLXML sqlxml) throws SQLException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void updateSQLXML(String s, SQLXML sqlxml) throws SQLException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
