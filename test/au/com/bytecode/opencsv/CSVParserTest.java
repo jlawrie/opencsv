@@ -401,4 +401,29 @@ public class CSVParserTest{
         assertEquals("29", nextItem[2]);
         assertEquals("C:\\foo.txt", nextItem[3]);
     }
+
+   @Test(expected=UnsupportedOperationException.class)
+   public void quoteAndEscapeCannotBeTheSame() {
+      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_QUOTE_CHARACTER);
+   }
+
+   @Test
+   public void quoteAndEscapeCanBeTheSameIfNull() {
+      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.NULL_CHARACTER, CSVParser.NULL_CHARACTER);
+   }
+
+   @Test(expected=UnsupportedOperationException.class)
+   public void separatorCharacterCannotBeNull() {
+      CSVParser p = new CSVParser(CSVParser.NULL_CHARACTER);
+   }
+
+   @Test(expected=UnsupportedOperationException.class)
+   public void separatorAndEscapeCannotBeTheSame() {
+      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_SEPARATOR);
+   }
+
+      @Test(expected=UnsupportedOperationException.class)
+   public void separatorAndQuoteCannotBeTheSame() {
+      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_ESCAPE_CHARACTER);
+   }
 }

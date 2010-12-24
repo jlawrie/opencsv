@@ -53,7 +53,7 @@ public class CSVParser {
      * constructor.
      */
     public static final char DEFAULT_QUOTE_CHARACTER = '"';
-    
+
 
     /**
      * The default escape character to use if none is supplied to the
@@ -72,7 +72,13 @@ public class CSVParser {
      * constructor
      */
     public static final boolean DEFAULT_IGNORE_LEADING_WHITESPACE = true;
-    
+
+   /**
+    * This is the "null" character - if a value is set to this then it is ignored.
+    * I.E. if the quote character is set to null then there is no quote character.
+    */
+   public static final char NULL_CHARACTER = '\0';
+
     /**
      * Constructs CSVParser using a comma for the separator.
      */
@@ -146,12 +152,30 @@ public class CSVParser {
      *            if true, white space in front of a quote in a field is ignored
      */
     public CSVParser(char separator, char quotechar, char escape, boolean strictQuotes, boolean ignoreLeadingWhiteSpace) {
+        if (anyCharactersAreTheSame(separator, quotechar, escape))
+        {
+           throw new UnsupportedOperationException("The separator, quote, and escape characters must be different!");
+        }
+        if (separator == NULL_CHARACTER)
+        {
+           throw new UnsupportedOperationException("The separator character must be defined!");
+        }
         this.separator = separator;
         this.quotechar = quotechar;
         this.escape = escape;
         this.strictQuotes = strictQuotes;
         this.ignoreLeadingWhiteSpace = ignoreLeadingWhiteSpace;
     }
+
+   private boolean anyCharactersAreTheSame(char separator, char quotechar, char escape)
+   {
+      return isSameCharacter(separator, quotechar) || isSameCharacter(separator, escape) || isSameCharacter(quotechar, escape);
+   }
+
+   private boolean isSameCharacter(char c1, char c2)
+   {
+      return c1 != NULL_CHARACTER && c1 == c2;
+   }
     /**
      * 
      * @return true if something was left over from last call(s)
@@ -213,7 +237,7 @@ public class CSVParser {
         			sb.append(nextLine.charAt(i+1));
         			i++;
         		}else{
-        			inQuotes = !inQuotes;
+        			//inQuotes = !inQuotes;
 
         			// the tricky case of an embedded quote in the middle: a,bc"d"ef,g
                     if (!strictQuotes) {
@@ -227,10 +251,13 @@ public class CSVParser {
                                 sb = new StringBuilder(INITIAL_READ_SIZE);  //discard white space leading up to quote
                             } else {
                                 sb.append(c);
+                                //continue;
                             }
   
                         }
                     }
+
+                 inQuotes = !inQuotes;
         		}
                 inField = !inField;
         	} else if (c == separator && !inQuotes) {

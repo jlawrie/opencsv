@@ -52,4 +52,26 @@ public class HeaderColumnNameTranslateMappingStrategyTest {
         assertEquals("emp123", bean.getId());
     }
 
+   @Test
+   public void getColumnNameReturnsNullIfColumnNumberIsTooLarge(){
+              String s = "n,o,foo\n" +
+                "kyle,123456,emp123\n" +
+                "jimmy,abcnum,cust09878";
+        HeaderColumnNameTranslateMappingStrategy<MockBean> strat = new HeaderColumnNameTranslateMappingStrategy<MockBean>();
+        strat.setType(MockBean.class);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("n", "name");
+        map.put("o", "orderNumber");
+        map.put("foo", "id");
+        strat.setColumnMapping(map);
+      
+        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
+        List<MockBean> list = csv.parse(strat, new StringReader(s));
+
+      assertEquals("name", strat.getColumnName(0));
+      assertEquals("orderNumber", strat.getColumnName(1));
+      assertEquals("id", strat.getColumnName(2));
+      assertNull(strat.getColumnName(3));
+   }
+
 }

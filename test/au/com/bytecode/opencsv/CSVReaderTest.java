@@ -373,7 +373,7 @@ public class CSVReaderTest {
 
 		sb.append("\"a\",\"1234567\",\"c\"").append("\n"); // "a","1234567","c"
 
-		CSVReader c = new CSVReader(new StringReader(sb.toString()));
+		CSVReader c = new CSVReader(new StringReader(sb.toString()), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, true);
 
 		String[] nextLine = c.readNext();
 		assertEquals(3, nextLine.length);
@@ -385,5 +385,54 @@ public class CSVReaderTest {
 		assertEquals("c", nextLine[2]);
 
 	}
+
+    @Test
+    public void testIssue2992134OutOfPlaceQuotes() throws IOException {
+        StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+
+        sb.append("a,b,c,ddd\\\"eee\nf,g,h,\"iii,jjj\"");
+        System.out.println(sb);
+
+       CSVReader c = new CSVReader(new StringReader(sb.toString()));
+
+ 		 String[] nextLine = c.readNext();
+
+       System.out.println(TestUtilities.displayStringArray("First Line", nextLine));
+
+       assertEquals("a", nextLine[0]);
+       assertEquals("b", nextLine[1]);
+       assertEquals("c", nextLine[2]);
+       assertEquals("ddd\"eee", nextLine[3]);
+    }
+
+   @Test(expected=UnsupportedOperationException.class)
+   public void quoteAndEscapeMustBeDifferent() {
+      StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+
+        sb.append("a,b,c,ddd\\\"eee\nf,g,h,\"iii,jjj\"");
+        System.out.println(sb);
+
+       CSVReader c = new CSVReader(new StringReader(sb.toString()), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVReader.DEFAULT_SKIP_LINES, CSVParser.DEFAULT_STRICT_QUOTES, CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE);
+   }
+
+   @Test(expected=UnsupportedOperationException.class)
+   public void separatorAndEscapeMustBeDifferent() {
+      StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+
+        sb.append("a,b,c,ddd\\\"eee\nf,g,h,\"iii,jjj\"");
+        System.out.println(sb);
+
+       CSVReader c = new CSVReader(new StringReader(sb.toString()), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_SEPARATOR, CSVReader.DEFAULT_SKIP_LINES, CSVParser.DEFAULT_STRICT_QUOTES, CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE);
+   }
+
+   @Test(expected=UnsupportedOperationException.class)
+   public void separatorAndQuoteMustBeDifferent() {
+      StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+
+        sb.append("a,b,c,ddd\\\"eee\nf,g,h,\"iii,jjj\"");
+        System.out.println(sb);
+
+       CSVReader c = new CSVReader(new StringReader(sb.toString()), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_ESCAPE_CHARACTER, CSVReader.DEFAULT_SKIP_LINES, CSVParser.DEFAULT_STRICT_QUOTES, CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE);
+   }
 
 }
