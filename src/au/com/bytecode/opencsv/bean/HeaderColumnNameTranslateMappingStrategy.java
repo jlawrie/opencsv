@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- Copyright 2007 Kyle Miller.
+ Copyright 2007,2010 Kyle Miller.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,12 +21,14 @@ import java.util.Map;
 public class HeaderColumnNameTranslateMappingStrategy<T> extends HeaderColumnNameMappingStrategy<T> {
     private Map<String, String> columnMapping = new HashMap<String, String>();
     protected String getColumnName(int col) {
-        return col < header.length ? columnMapping.get(header[col]) : null;
+        return col < header.length ? columnMapping.get(header[col].toUpperCase()) : null;
     }
     public Map<String, String> getColumnMapping() {
         return columnMapping;
     }
     public void setColumnMapping(Map<String, String> columnMapping) {
-        this.columnMapping = columnMapping;
+       for (String key : columnMapping.keySet()) {
+          this.columnMapping.put(key.toUpperCase(), columnMapping.get(key));
+       }
     }
 }
