@@ -351,6 +351,28 @@ public class CSVWriterTest {
     }
 
     @Test
+    public void testMultiLineResultSetWithHeaders() throws SQLException, IOException {
+        String[] header = {"Foo","Bar","baz"};
+        String[] value = {"v1", "v2", "v3"};
+
+        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
+
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw);
+        csvw.setResultService(mockHelperService);
+
+        MockResultSet rs = new MockResultSet();
+        rs.setNumberOfResults(3);
+
+        csvw.writeAll(rs, true); // don't need a result set since I am mocking the result.
+        assertFalse(csvw.checkError());
+        String result = sw.toString();
+
+        assertNotNull(result);
+        assertEquals("\"Foo\",\"Bar\",\"baz\"\n\"v1\",\"v2\",\"v3\"\n\"v1\",\"v2\",\"v3\"\n\"v1\",\"v2\",\"v3\"\n", result);
+    }
+
+    @Test
     public void testResultSetWithoutHeaders() throws SQLException, IOException {
         String[] header = {"Foo","Bar","baz"};
         String[] value = {"v1", "v2", "v3"};
@@ -372,4 +394,25 @@ public class CSVWriterTest {
         assertEquals("\"v1\",\"v2\",\"v3\"\n", result);
     }
 
+    @Test
+    public void testMultiLineResultSetWithoutHeaders() throws SQLException, IOException {
+        String[] header = {"Foo","Bar","baz"};
+        String[] value = {"v1", "v2", "v3"};
+
+        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
+
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw);
+        csvw.setResultService(mockHelperService);
+
+        MockResultSet rs = new MockResultSet();
+        rs.setNumberOfResults(3);
+
+        csvw.writeAll(rs, false); // don't need a result set since I am mocking the result.
+        assertFalse(csvw.checkError());
+        String result = sw.toString();
+
+        assertNotNull(result);
+        assertEquals("\"v1\",\"v2\",\"v3\"\n\"v1\",\"v2\",\"v3\"\n\"v1\",\"v2\",\"v3\"\n", result);
+    }
 }
