@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.*;
 
-public class CSVParserTest{
+public class CSVParserTest {
 
     CSVParser csvParser;
 
@@ -38,62 +38,62 @@ public class CSVParserTest{
 
         String[] nextLine = csvParser.parseLine("a,b,c");
         assertEquals(3, nextLine.length);
-		assertEquals("a", nextLine[0]);
-		assertEquals("b", nextLine[1]);
-		assertEquals("c", nextLine[2]);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
         assertFalse(csvParser.isPending());
     }
 
     /**
-	 * Tests quotes in the middle of an element.
-	 *
-	 * @throws IOException if bad things happen
-	 */
-	@Test
-	public void testParsedLineWithInternalQuota() throws IOException {
+     * Tests quotes in the middle of an element.
+     *
+     * @throws IOException if bad things happen
+     */
+    @Test
+    public void testParsedLineWithInternalQuota() throws IOException {
 
-		String[] nextLine = csvParser.parseLine("a,123\"4\"567,c");
-		assertEquals(3, nextLine.length);
+        String[] nextLine = csvParser.parseLine("a,123\"4\"567,c");
+        assertEquals(3, nextLine.length);
 
-		assertEquals("123\"4\"567", nextLine[1]);
+        assertEquals("123\"4\"567", nextLine[1]);
 
-	}
+    }
 
     @Test
-    public void parseQuotedStringWithCommas() throws IOException{
+    public void parseQuotedStringWithCommas() throws IOException {
         String[] nextLine = csvParser.parseLine("a,\"b,b,b\",c");
-		assertEquals("a", nextLine[0]);
-		assertEquals("b,b,b", nextLine[1]);
-		assertEquals("c", nextLine[2]);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b,b,b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
         assertEquals(3, nextLine.length);
     }
 
     @Test
-    public void parseQuotedStringWithDefinedSeperator() throws IOException{
+    public void parseQuotedStringWithDefinedSeperator() throws IOException {
         csvParser = new CSVParser(':');
 
         String[] nextLine = csvParser.parseLine("a:\"b:b:b\":c");
-		assertEquals("a", nextLine[0]);
-		assertEquals("b:b:b", nextLine[1]);
-		assertEquals("c", nextLine[2]);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b:b:b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
         assertEquals(3, nextLine.length);
     }
 
     @Test
-    public void parseQuotedStringWithDefinedSeperatorAndQuote() throws IOException{
+    public void parseQuotedStringWithDefinedSeperatorAndQuote() throws IOException {
         csvParser = new CSVParser(':', '\'');
 
         String[] nextLine = csvParser.parseLine("a:'b:b:b':c");
-		assertEquals("a", nextLine[0]);
-		assertEquals("b:b:b", nextLine[1]);
-		assertEquals("c", nextLine[2]);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b:b:b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
         assertEquals(3, nextLine.length);
     }
 
     @Test
     public void parseEmptyElements() throws IOException {
-        String [] nextLine = csvParser.parseLine(",,");
-		assertEquals(3, nextLine.length);
+        String[] nextLine = csvParser.parseLine(",,");
+        assertEquals(3, nextLine.length);
         assertEquals("", nextLine[0]);
         assertEquals("", nextLine[1]);
         assertEquals("", nextLine[2]);
@@ -102,44 +102,55 @@ public class CSVParserTest{
     @Test
     public void parseMultiLinedQuoted() throws IOException {
         String[] nextLine = csvParser.parseLine("a,\"PO Box 123,\nKippax,ACT. 2615.\nAustralia\",d.\n");
-		assertEquals(3, nextLine.length);
+        assertEquals(3, nextLine.length);
         assertEquals("a", nextLine[0]);
         assertEquals("PO Box 123,\nKippax,ACT. 2615.\nAustralia", nextLine[1]);
         assertEquals("d.\n", nextLine[2]);
     }
 
-	@Test
-	public void testADoubleQuoteAsDataElement() throws IOException {
+    @Test
+    public void testADoubleQuoteAsDataElement() throws IOException {
 
-		String[] nextLine = csvParser.parseLine("a,\"\"\"\",c");// a,"""",c
+        String[] nextLine = csvParser.parseLine("a,\"\"\"\",c");// a,"""",c
 
-		assertEquals(3, nextLine.length);
+        assertEquals(3, nextLine.length);
 
-		assertEquals("a", nextLine[0]);
-		assertEquals(1, nextLine[1].length());
-		assertEquals("\"", nextLine[1]);
-		assertEquals("c", nextLine[2]);
+        assertEquals("a", nextLine[0]);
+        assertEquals(1, nextLine[1].length());
+        assertEquals("\"", nextLine[1]);
+        assertEquals("c", nextLine[2]);
 
-	}
+    }
 
-	@Test
-	public void testEscapedDoubleQuoteAsDataElement() throws IOException {
+    @Test
+    public void testEscapedDoubleQuoteAsDataElement() throws IOException {
 
-		String[] nextLine = csvParser.parseLine("\"test\",\"this,test,is,good\",\"\\\"test\\\"\",\"\\\"quote\\\"\""); // "test","this,test,is,good","\"test\",\"quote\""
+        String[] nextLine = csvParser.parseLine("\"test\",\"this,test,is,good\",\"\\\"test\\\"\",\"\\\"quote\\\"\""); // "test","this,test,is,good","\"test\",\"quote\""
 
-		assertEquals(4, nextLine.length);
+        assertEquals(4, nextLine.length);
 
-		assertEquals("test", nextLine[0]);
-		assertEquals("this,test,is,good", nextLine[1]);
-		assertEquals("\"test\"", nextLine[2]);
-		assertEquals("\"quote\"", nextLine[3]);
+        assertEquals("test", nextLine[0]);
+        assertEquals("this,test,is,good", nextLine[1]);
+        assertEquals("\"test\"", nextLine[2]);
+        assertEquals("\"quote\"", nextLine[3]);
 
-	}
+    }
+
+//    @Test
+//    public void testEscapingSeparator() throws IOException {
+//        String[] nextLine = csvParser.parseLine("test,this\\,test\\,is\\,good"); // "test","this,test,is,good","\"test\",\"quote\""
+//
+//        assertEquals(2, nextLine.length);
+//
+//        assertEquals("test", nextLine[0]);
+//        assertEquals("this,test,is,good", nextLine[1]);
+//    }
+
     @Test
     public void parseQuotedQuoteCharacters() throws IOException {
         String[] nextLine = csvParser.parseLineMulti("\"Glen \"\"The Man\"\" Smith\",Athlete,Developer\n");
         assertEquals(3, nextLine.length);
-		assertEquals("Glen \"The Man\" Smith", nextLine[0]);
+        assertEquals("Glen \"The Man\" Smith", nextLine[0]);
         assertEquals("Athlete", nextLine[1]);
         assertEquals("Developer\n", nextLine[2]);
     }
@@ -147,22 +158,22 @@ public class CSVParserTest{
     @Test
     public void parseMultipleQuotes() throws IOException {
         String[] nextLine = csvParser.parseLine("\"\"\"\"\"\",\"test\"\n"); // """""","test"  representing:  "", test
-		assertEquals("\"\"",nextLine[0]); // check the tricky situation
-		assertEquals("test\"\n", nextLine[1]); // make sure we didn't ruin the next field..
+        assertEquals("\"\"", nextLine[0]); // check the tricky situation
+        assertEquals("test\"\n", nextLine[1]); // make sure we didn't ruin the next field..
         assertEquals(2, nextLine.length);
     }
 
     @Test
     public void parseTrickyString() throws IOException {
         String[] nextLine = csvParser.parseLine("\"a\nb\",b,\"\nd\",e\n");
-		assertEquals(4, nextLine.length);
+        assertEquals(4, nextLine.length);
         assertEquals("a\nb", nextLine[0]);
         assertEquals("b", nextLine[1]);
         assertEquals("\nd", nextLine[2]);
         assertEquals("e\n", nextLine[3]);
     }
 
-    private String setUpMultiLineInsideQuotes(){
+    private String setUpMultiLineInsideQuotes() {
         StringBuffer sb = new StringBuffer(CSVParser.INITIAL_READ_SIZE);
 
         sb.append("Small test,\"This is a test across \ntwo lines.\"");
@@ -175,16 +186,16 @@ public class CSVParserTest{
 
         String testString = setUpMultiLineInsideQuotes();
 
-		String[] nextLine = csvParser.parseLine(testString);
+        String[] nextLine = csvParser.parseLine(testString);
         assertEquals(2, nextLine.length);
-		assertEquals("Small test", nextLine[0]);
+        assertEquals("Small test", nextLine[0]);
         assertEquals("This is a test across \ntwo lines.", nextLine[1]);
         assertFalse(csvParser.isPending());
     }
 
     @Test
     public void testStrictQuoteSimple() throws IOException {
-        csvParser = new CSVParser (',', '\"', '\\', true);
+        csvParser = new CSVParser(',', '\"', '\\', true);
         String testString = "\"a\",\"b\",\"c\"";
 
         String[] nextLine = csvParser.parseLine(testString);
@@ -196,7 +207,7 @@ public class CSVParserTest{
 
     @Test
     public void testStrictQuoteWithSpacesAndTabs() throws IOException {
-        csvParser = new CSVParser (',', '\"', '\\', true);
+        csvParser = new CSVParser(',', '\"', '\\', true);
         String testString = " \t      \"a\",\"b\"      \t       ,   \"c\"   ";
 
         String[] nextLine = csvParser.parseLine(testString);
@@ -208,7 +219,7 @@ public class CSVParserTest{
 
     @Test
     public void testStrictQuoteWithGarbage() throws IOException {
-        csvParser = new CSVParser (',', '\"', '\\', true);
+        csvParser = new CSVParser(',', '\"', '\\', true);
         String testString = "abc',!@#\",\\\"\"   xyz,";
 
         String[] nextLine = csvParser.parseLine(testString);
@@ -218,75 +229,74 @@ public class CSVParserTest{
         assertEquals("", nextLine[2]);
     }
 
-    	/**
-	 * Test issue 2263439 where an escaped quote was causing the parse to fail.
-	 *
-	 * Special thanks to Chris Morris for fixing this (id 1979054)
-	 * @throws IOException
-	 *
-	 */
-	@Test
-	public void testIssue2263439() throws IOException {
+    /**
+     * Test issue 2263439 where an escaped quote was causing the parse to fail.
+     * <p/>
+     * Special thanks to Chris Morris for fixing this (id 1979054)
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testIssue2263439() throws IOException {
         csvParser = new CSVParser(',', '\'');
-            
-		String[] nextLine = csvParser.parseLine("865,0,'AmeriKKKa\\'s_Most_Wanted','',294,0,0,0.734338696798625,'20081002052147',242429208,18448");
 
-		assertEquals(11, nextLine.length);
+        String[] nextLine = csvParser.parseLine("865,0,'AmeriKKKa\\'s_Most_Wanted','',294,0,0,0.734338696798625,'20081002052147',242429208,18448");
 
-		assertEquals("865", nextLine[0]);
-		assertEquals("0", nextLine[1]);
-		assertEquals("AmeriKKKa's_Most_Wanted", nextLine[2]);
-		assertEquals("", nextLine[3]);
-		assertEquals("18448", nextLine[10]);
+        assertEquals(11, nextLine.length);
 
-	}
+        assertEquals("865", nextLine[0]);
+        assertEquals("0", nextLine[1]);
+        assertEquals("AmeriKKKa's_Most_Wanted", nextLine[2]);
+        assertEquals("", nextLine[3]);
+        assertEquals("18448", nextLine[10]);
 
-	/**
-	 * Test issue 2859181 where an escaped character before a character
-	 * that did not need escaping was causing the parse to fail.
-	 *
-	 * @throws IOException
-	 *
-	 */
-	@Test
-	public void testIssue2859181() throws IOException {
+    }
+
+    /**
+     * Test issue 2859181 where an escaped character before a character
+     * that did not need escaping was causing the parse to fail.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testIssue2859181() throws IOException {
         csvParser = new CSVParser(';');
-		String[] nextLine = csvParser.parseLine("field1;\\=field2;\"\"\"field3\"\"\""); // field1;\=field2;"""field3"""
+        String[] nextLine = csvParser.parseLine("field1;\\=field2;\"\"\"field3\"\"\""); // field1;\=field2;"""field3"""
 
-		assertEquals(3, nextLine.length);
+        assertEquals(3, nextLine.length);
 
-		assertEquals("field1", nextLine[0]);
-		assertEquals("=field2", nextLine[1]);
-		assertEquals("\"field3\"", nextLine[2]);
+        assertEquals("field1", nextLine[0]);
+        assertEquals("=field2", nextLine[1]);
+        assertEquals("\"field3\"", nextLine[2]);
 
-	}
+    }
 
-    	/**
-	 * Test issue 2726363
-	 *
-	 * Data given:
-	 *
-	 *	"804503689","London",""London""shop","address","116.453182","39.918884"
-	 *	"453074125","NewYork","brief","address"","121.514683","31.228511"
-	 */
-	@Test
-	public void testIssue2726363() throws IOException {    
+    /**
+     * Test issue 2726363
+     * <p/>
+     * Data given:
+     * <p/>
+     * "804503689","London",""London""shop","address","116.453182","39.918884"
+     * "453074125","NewYork","brief","address"","121.514683","31.228511"
+     */
+    @Test
+    public void testIssue2726363() throws IOException {
 
-		String[] nextLine = csvParser.parseLine("\"804503689\",\"London\",\"\"London\"shop\",\"address\",\"116.453182\",\"39.918884\"");
+        String[] nextLine = csvParser.parseLine("\"804503689\",\"London\",\"\"London\"shop\",\"address\",\"116.453182\",\"39.918884\"");
 
-		assertEquals(6, nextLine.length);
+        assertEquals(6, nextLine.length);
 
 
-		assertEquals("804503689", nextLine[0]);
-		assertEquals("London", nextLine[1]);
-		assertEquals("\"London\"shop", nextLine[2]);
-		assertEquals("address", nextLine[3]);
-		assertEquals("116.453182", nextLine[4]);
-		assertEquals("39.918884", nextLine[5]);
+        assertEquals("804503689", nextLine[0]);
+        assertEquals("London", nextLine[1]);
+        assertEquals("\"London\"shop", nextLine[2]);
+        assertEquals("address", nextLine[3]);
+        assertEquals("116.453182", nextLine[4]);
+        assertEquals("39.918884", nextLine[5]);
 
-	}
+    }
 
-    @Test(expected=IOException.class)
+    @Test(expected = IOException.class)
     public void anIOExceptionThrownifStringEndsInsideAQuotedString() throws IOException {
         String[] nextLine = csvParser.parseLine("This,is a \"bad line to parse.");
 
@@ -354,16 +364,16 @@ public class CSVParserTest{
         assertNull(nextLine);
     }
 
-        private static final String ESCAPE_TEST_STRING = "\\\\1\\2\\\"3\\"; // \\1\2\"\
+    private static final String ESCAPE_TEST_STRING = "\\\\1\\2\\\"3\\"; // \\1\2\"\
 
     @Test
-    public void validateEscapeStringBeforeRealTest(){
+    public void validateEscapeStringBeforeRealTest() {
         assertNotNull(ESCAPE_TEST_STRING);
         assertEquals(9, ESCAPE_TEST_STRING.length());
     }
 
     @Test
-    public void whichCharactersAreEscapable(){
+    public void whichCharactersAreEscapable() {
         assertTrue(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, true, 0));
         assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, false, 0));
         // Second character is not escapable because there is a non quote or non slash after it. 
@@ -381,8 +391,8 @@ public class CSVParserTest{
         assertFalse(csvParser.isNextCharacterEscapable(ESCAPE_TEST_STRING, false, lastChar));
 
     }
-    
-    
+
+
     @Test
     public void whitespaceBeforeEscape() throws IOException {
         String[] nextItem = csvParser.parseLine("\"this\", \"is\",\"a test\""); //"this", "is","a test"
@@ -402,28 +412,29 @@ public class CSVParserTest{
         assertEquals("C:\\foo.txt", nextItem[3]);
     }
 
-   @Test(expected=UnsupportedOperationException.class)
-   public void quoteAndEscapeCannotBeTheSame() {
-      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_QUOTE_CHARACTER);
-   }
+    @Test(expected = UnsupportedOperationException.class)
+    public void quoteAndEscapeCannotBeTheSame() {
+        CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_QUOTE_CHARACTER);
+    }
 
-   @Test
-   public void quoteAndEscapeCanBeTheSameIfNull() {
-      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.NULL_CHARACTER, CSVParser.NULL_CHARACTER);
-   }
+    @Test
+    public void quoteAndEscapeCanBeTheSameIfNull() {
+        CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.NULL_CHARACTER, CSVParser.NULL_CHARACTER);
+    }
 
-   @Test(expected=UnsupportedOperationException.class)
-   public void separatorCharacterCannotBeNull() {
-      CSVParser p = new CSVParser(CSVParser.NULL_CHARACTER);
-   }
+    @Test(expected = UnsupportedOperationException.class)
+    public void separatorCharacterCannotBeNull() {
+        CSVParser p = new CSVParser(CSVParser.NULL_CHARACTER);
+    }
 
-   @Test(expected=UnsupportedOperationException.class)
-   public void separatorAndEscapeCannotBeTheSame() {
-      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_SEPARATOR);
-   }
+    @Test(expected = UnsupportedOperationException.class)
+    public void separatorAndEscapeCannotBeTheSame() {
+        CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_SEPARATOR);
+    }
 
-      @Test(expected=UnsupportedOperationException.class)
-   public void separatorAndQuoteCannotBeTheSame() {
-      CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_ESCAPE_CHARACTER);
-   }
+    @Test(expected = UnsupportedOperationException.class)
+    public void separatorAndQuoteCannotBeTheSame() {
+        CSVParser p = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_ESCAPE_CHARACTER);
+    }
+
 }
