@@ -301,7 +301,22 @@ public class CSVReaderTest {
 		assertEquals("c", nextLine[2]);
 
 	}
-	
+
+    @Test
+    public void testSpacesAtEndOfString() throws IOException {
+        StringBuilder sb = new StringBuilder(CSVParser.INITIAL_READ_SIZE);
+
+        sb.append("\"a\",\"b\",\"c\"   ");
+
+        CSVReader c = new CSVReader(new StringReader(sb.toString()), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, true);
+
+        String[] nextLine = c.readNext();
+		assertEquals(3, nextLine.length);
+
+		assertEquals("a", nextLine[0]);
+        assertEquals("b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
+    }
 
 	
 	@Test
