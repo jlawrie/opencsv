@@ -38,10 +38,10 @@ public class ColumnPositionMappingStrategyTest {
     @Test
     public void testParse() {
         String s = "" +
-                "kyle,123456,emp123\n" +
-                "jimmy,abcnum,cust09878";
+                "kyle,123456,emp123,1\n" +
+                "jimmy,abcnum,cust09878,2";
 
-        String[] columns = new String[] {"name", "orderNumber", "id"};
+        String[] columns = new String[]{"name", "orderNumber", "id", "num"};
         strat.setColumnMapping(columns);
 
         CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
@@ -52,16 +52,36 @@ public class ColumnPositionMappingStrategyTest {
         assertEquals("kyle", bean.getName());
         assertEquals("123456", bean.getOrderNumber());
         assertEquals("emp123", bean.getId());
+        assertEquals(1, bean.getNum());
     }
 
     @Test
-    public void testGetColumnMapping()
-    {
+    public void testParseWithTrailingSpaces() {
+        String s = "" +
+                "kyle  ,123456  ,emp123  ,1   \n" +
+                "jimmy,abcnum,cust09878,2   ";
+
+        String[] columns = new String[]{"name", "orderNumber", "id", "num"};
+        strat.setColumnMapping(columns);
+
+        CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
+        List<MockBean> list = csv.parse(strat, new StringReader(s));
+        assertNotNull(list);
+        assertTrue(list.size() == 2);
+        MockBean bean = list.get(0);
+        assertEquals("kyle  ", bean.getName());
+        assertEquals("123456  ", bean.getOrderNumber());
+        assertEquals("emp123  ", bean.getId());
+        assertEquals(1, bean.getNum());
+    }
+
+    @Test
+    public void testGetColumnMapping() {
         String[] columnMapping = strat.getColumnMapping();
         assertNotNull(columnMapping);
         assertEquals(0, columnMapping.length);
 
-        String[] columns = new String[] {"name", "orderNumber", "id"};
+        String[] columns = new String[]{"name", "orderNumber", "id"};
         strat.setColumnMapping(columns);
 
         columnMapping = strat.getColumnMapping();
@@ -72,10 +92,9 @@ public class ColumnPositionMappingStrategyTest {
     }
 
     @Test
-    public void testGetColumnNames()
-    {
+    public void testGetColumnNames() {
 
-        String[] columns = new String[] {"name", null, "id"};
+        String[] columns = new String[]{"name", null, "id"};
         strat.setColumnMapping(columns);
 
         assertEquals("name", strat.getColumnName(0));
@@ -85,10 +104,9 @@ public class ColumnPositionMappingStrategyTest {
     }
 
     @Test
-    public void testGetColumnNamesArray()
-    {
+    public void testGetColumnNamesArray() {
 
-        String[] columns = new String[] {"name", null, "id"};
+        String[] columns = new String[]{"name", null, "id"};
         strat.setColumnMapping(columns);
         String[] mapping = strat.getColumnMapping();
 
@@ -99,8 +117,7 @@ public class ColumnPositionMappingStrategyTest {
     }
 
     @Test
-    public void getColumnNamesHandlesNull()
-    {
+    public void getColumnNamesHandlesNull() {
         strat.setColumnMapping(null);
 
         assertEquals(null, strat.getColumnName(0));

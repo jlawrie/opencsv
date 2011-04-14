@@ -12,7 +12,7 @@ public class CsvToBeanTest {
 
     private static final String TEST_STRING = "name,orderNumber,num\n" +
             "kyle,abc123456,123\n" +
-            "jimmy,def098765,456";
+            "jimmy,def098765,456 ";
 
     private CSVReader createReader() {
         StringReader reader = new StringReader(TEST_STRING);
