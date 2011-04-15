@@ -14,6 +14,7 @@ package au.com.bytecode.opencsv;
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,6 +41,18 @@ public class MockResultSetHelper implements ResultSetHelper {
     }
 
     public String[] getColumnValues(ResultSet rs) throws SQLException, IOException {
-        return columnValues;
+        return getColumnValues(rs, false);
+    }
+
+    public String[] getColumnValues(ResultSet rs, boolean trim) {
+        String[] vals = new String[columnValues.length];
+        if (trim) {
+            for (int i = 0; i < vals.length; i++) {
+                vals[i] = columnValues[i].trim();
+            }
+            return vals;
+        } else {
+            return columnValues;
+        }
     }
 }

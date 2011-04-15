@@ -14,6 +14,7 @@ package au.com.bytecode.opencsv;
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -36,16 +37,15 @@ public class MockResultSet implements ResultSet {
     private String[] columnValues;
     private boolean lastValueReadNull;
 
-    private void setLastValueReadNull(String value){
+    private void setLastValueReadNull(String value) {
         lastValueReadNull = (value == null);
     }
-
 
     public void setColumnValues(String[] values) {
         columnValues = values;
     }
 
-    public void setNumberOfResults(int results){
+    public void setNumberOfResults(int results) {
         numberOfResults = results;
     }
 
@@ -66,11 +66,11 @@ public class MockResultSet implements ResultSet {
     }
 
     public String getString(int i) throws SQLException {
-        return columnValues[i-1];
+        return columnValues[i - 1];
     }
 
     public boolean getBoolean(int i) throws SQLException {
-        return Boolean.valueOf(columnValues[i-1]);  //To change body of implemented methods use File | Settings | File Templates.
+        return Boolean.valueOf(columnValues[i - 1]);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public byte getByte(int i) throws SQLException {
@@ -82,13 +82,13 @@ public class MockResultSet implements ResultSet {
     }
 
     public int getInt(int i) throws SQLException {
-        setLastValueReadNull(columnValues[i-1]);
-        return columnValues[i-1] == null ? 0 : Integer.valueOf(columnValues[i-1]);
+        setLastValueReadNull(columnValues[i - 1]);
+        return columnValues[i - 1] == null ? 0 : Integer.valueOf(columnValues[i - 1]);
     }
 
     public long getLong(int i) throws SQLException {
-        setLastValueReadNull(columnValues[i-1]);
-        return columnValues[i-1] == null ? 0 : Long.valueOf(columnValues[i-1]);
+        setLastValueReadNull(columnValues[i - 1]);
+        return columnValues[i - 1] == null ? 0 : Long.valueOf(columnValues[i - 1]);
     }
 
     public float getFloat(int i) throws SQLException {
@@ -108,15 +108,15 @@ public class MockResultSet implements ResultSet {
     }
 
     public Date getDate(int i) throws SQLException {
-        return columnValues[i-1] == null ? null : new Date(Long.valueOf(columnValues[i-1]));
+        return columnValues[i - 1] == null ? null : new Date(Long.valueOf(columnValues[i - 1]));
     }
 
     public Time getTime(int i) throws SQLException {
-        return columnValues[i-1] == null ? null : new Time(Long.valueOf(columnValues[i-1]));
+        return columnValues[i - 1] == null ? null : new Time(Long.valueOf(columnValues[i - 1]));
     }
 
     public Timestamp getTimestamp(int i) throws SQLException {
-        return columnValues[i-1] == null ? null : new Timestamp(Long.valueOf(columnValues[i-1]));
+        return columnValues[i - 1] == null ? null : new Timestamp(Long.valueOf(columnValues[i - 1]));
     }
 
     public InputStream getAsciiStream(int i) throws SQLException {
@@ -212,8 +212,8 @@ public class MockResultSet implements ResultSet {
     }
 
     public Object getObject(int i) throws SQLException {
-        setLastValueReadNull(columnValues[i-1]);
-        return columnValues[i-1];  //To change body of implemented methods use File | Settings | File Templates.
+        setLastValueReadNull(columnValues[i - 1]);
+        return columnValues[i - 1];  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public Object getObject(String s) throws SQLException {
@@ -233,8 +233,8 @@ public class MockResultSet implements ResultSet {
     }
 
     public BigDecimal getBigDecimal(int i) throws SQLException {
-        setLastValueReadNull(columnValues[i-1]);
-        return columnValues[i-1] == null ? null : new BigDecimal(columnValues[i-1]);
+        setLastValueReadNull(columnValues[i - 1]);
+        return columnValues[i - 1] == null ? null : new BigDecimal(columnValues[i - 1]);
     }
 
     public BigDecimal getBigDecimal(String s) throws SQLException {
@@ -522,7 +522,7 @@ public class MockResultSet implements ResultSet {
     }
 
     public Clob getClob(int i) throws SQLException {
-        return columnValues[i-1] == null ? null : new MockClob(columnValues[i-1]);
+        return columnValues[i - 1] == null ? null : new MockClob(columnValues[i - 1]);
     }
 
     public Array getArray(int i) throws SQLException {

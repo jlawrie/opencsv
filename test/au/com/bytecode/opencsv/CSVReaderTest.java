@@ -445,4 +445,26 @@ public class CSVReaderTest {
         CSVReader c = new CSVReader(new StringReader(sb.toString()), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_ESCAPE_CHARACTER, CSVReader.DEFAULT_SKIP_LINES, CSVParser.DEFAULT_STRICT_QUOTES, CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE);
     }
 
+    /**
+     * Tests iterating over a reader.
+     *
+     * @throws IOException if the reader fails.
+     */
+    @Test
+    public void testIteratorFunctionality() throws IOException {
+        String[][] expectedResult = new String[7][];
+        expectedResult[0] = new String[]{"a", "b", "c"};
+        expectedResult[1] = new String[]{"a", "b,b,b", "c"};
+        expectedResult[2] = new String[]{"", "", ""};
+        expectedResult[3] = new String[]{"a", "PO Box 123,\nKippax,ACT. 2615.\nAustralia", "d."};
+        expectedResult[4] = new String[]{"Glen \"The Man\" Smith", "Athlete", "Developer"};
+        expectedResult[5] = new String[]{"\"\"", "test"};
+        expectedResult[6] = new String[]{"a\nb", "b", "\nd", "e"};
+        int idx = 0;
+        for (String[] line : csvr) {
+            String[] expectedLine = expectedResult[idx++];
+            assertArrayEquals(expectedLine, line);
+        }
+    }
+
 }
