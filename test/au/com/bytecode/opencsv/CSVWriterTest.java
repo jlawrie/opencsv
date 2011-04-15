@@ -57,6 +57,14 @@ public class CSVWriterTest {
         assertEquals(0, sw.toString().length());
     }
 
+    @Test
+    public void correctlyParserNullObject() {
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw, ',', '\'');
+        csvw.writeNext(null, false);
+        assertEquals(0, sw.toString().length());
+    }
+
     /**
      * Tests parsing individual lines.
      *
@@ -140,12 +148,12 @@ public class CSVWriterTest {
 
 
     /**
-     * Test parsing from to a list.
+     * Test writing to a list.
      *
      * @throws IOException if the reader fails.
      */
     @Test
-    public void testParseAll() throws IOException {
+    public void testWriteAll() throws IOException {
 
         List<String[]> allElements = new ArrayList<String[]>();
         String[] line1 = "Name#Phone#Email".split("#");
@@ -164,6 +172,35 @@ public class CSVWriterTest {
 
         assertEquals(3, lines.length);
 
+    }
+
+    /**
+     * Test writing from a list.
+     *
+     * @throws IOException if the reader fails.
+     */
+    @Test
+    public void testWriteAllObjects() throws IOException {
+
+        List<String[]> allElements = new ArrayList<String[]>(3);
+        String[] line1 = "Name#Phone#Email".split("#");
+        String[] line2 = "Glen#1234#glen@abcd.com".split("#");
+        String[] line3 = "John#5678#john@efgh.com".split("#");
+        allElements.add(line1);
+        allElements.add(line2);
+        allElements.add(line3);
+
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw);
+        csvw.writeAll(allElements, false);
+
+        String result = sw.toString();
+        String[] lines = result.split("\n");
+
+        assertEquals(3, lines.length);
+
+        String[] values = lines[1].split(",");
+        assertEquals("1234", values[1]);
     }
 
     /**
@@ -198,6 +235,20 @@ public class CSVWriterTest {
         String result = sw.toString();
 
         assertEquals("Foo,Bar,Baz\n", result);
+    }
+
+    /**
+     * Tests the ability for the writer to apply quotes only where strings contain the separator, escape, quote or new line characters.
+     */
+    @Test
+    public void testIntelligentQuotes() {
+        String[] line = {"1", "Foo", "With,Separator", "Line\nBreak", "Hello \"Foo Bar\" World", "Bar"};
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriter(sw, CSVWriter.DEFAULT_SEPARATOR, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER);
+        csvw.writeNext(line, false);
+        String result = sw.toString();
+
+        assertEquals("1,Foo,\"With,Separator\",\"Line\nBreak\",\"Hello \"\"Foo Bar\"\" World\",Bar\n", result);
     }
 
 

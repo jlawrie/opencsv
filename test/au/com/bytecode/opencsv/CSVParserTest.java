@@ -136,16 +136,6 @@ public class CSVParserTest {
 
     }
 
-//    @Test
-//    public void testEscapingSeparator() throws IOException {
-//        String[] nextLine = csvParser.parseLine("test,this\\,test\\,is\\,good"); // "test","this,test,is,good","\"test\",\"quote\""
-//
-//        assertEquals(2, nextLine.length);
-//
-//        assertEquals("test", nextLine[0]);
-//        assertEquals("this,test,is,good", nextLine[1]);
-//    }
-
     @Test
     public void parseQuotedQuoteCharacters() throws IOException {
         String[] nextLine = csvParser.parseLineMulti("\"Glen \"\"The Man\"\" Smith\",Athlete,Developer\n");
@@ -227,6 +217,24 @@ public class CSVParserTest {
         assertEquals("", nextLine[0]);
         assertEquals(",\"", nextLine[1]);
         assertEquals("", nextLine[2]);
+    }
+
+    @Test
+    public void testCanIgnoreQuotations() throws IOException {
+        csvParser = new CSVParser(CSVParser.DEFAULT_SEPARATOR,
+                CSVParser.DEFAULT_QUOTE_CHARACTER,
+                CSVParser.DEFAULT_ESCAPE_CHARACTER,
+                CSVParser.DEFAULT_STRICT_QUOTES,
+                CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE,
+                true);
+        String testString = "Bob,test\",Beaumont,TX";
+
+        String[] nextLine = csvParser.parseLine(testString);
+        assertEquals(4, nextLine.length);
+        assertEquals("Bob", nextLine[0]);
+        assertEquals("test", nextLine[1]);
+        assertEquals("Beaumont", nextLine[2]);
+        assertEquals("TX", nextLine[3]);
     }
 
     /**

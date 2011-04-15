@@ -156,6 +156,22 @@ public class CSVWriter implements Closeable {
      * Writes the entire list to a CSV file. The list is assumed to be a
      * String[]
      *
+     * @param allLines         a List of String[], with each String[] representing a line of
+     *                         the file.
+     * @param applyQuotesToAll true if all values are to be quoted.  false if quotes only
+     *                         to be applied to values which contain the separator, escape,
+     *                         quote or new line characters.
+     */
+    public void writeAll(List<String[]> allLines, boolean applyQuotesToAll) {
+        for (String[] line : allLines) {
+            writeNext(line, applyQuotesToAll);
+        }
+    }
+
+    /**
+     * Writes the entire list to a CSV file. The list is assumed to be a
+     * String[]
+     *
      * @param allLines a List of String[], with each String[] representing a line of
      *                 the file.
      */
@@ -190,8 +206,6 @@ public class CSVWriter implements Closeable {
      * <p/>
      * The caller is responsible for closing the ResultSet.
      *
-     * @param rs                 the recordset to write
-     * @param includeColumnNames true if you want column names in the output, false otherwise
      * @throws java.io.IOException   thrown by getColumnValue
      * @throws java.sql.SQLException thrown by getColumnValue
      */
@@ -207,14 +221,15 @@ public class CSVWriter implements Closeable {
         }
     }
 
-
     /**
      * Writes the next line to the file.
      *
-     * @param nextLine a string array with each comma-separated element as a separate
-     *                 entry.
+     * @param nextLine         a string array with each comma-separated element as a separate
+     *                         entry.
+     * @param applyQuotesToAll true if all values are to be quoted.  false applies quotes only
+     *                         to values which contain the separator, escape, quote or new line characters.
      */
-    public void writeNext(String[] nextLine) {
+    public void writeNext(String[] nextLine, boolean applyQuotesToAll) {
 
         if (nextLine == null)
             return;
@@ -227,24 +242,41 @@ public class CSVWriter implements Closeable {
             }
 
             String nextElement = nextLine[i];
+
             if (nextElement == null)
                 continue;
-            if (quotechar != NO_QUOTE_CHARACTER)
+
+            Boolean stringContainsSpecialCharacters = stringContainsSpecialCharacters(nextElement);
+
+            if ((applyQuotesToAll || stringContainsSpecialCharacters) && quotechar != NO_QUOTE_CHARACTER)
                 sb.append(quotechar);
 
-            sb.append(stringContainsSpecialCharacters(nextElement) ? processLine(nextElement) : nextElement);
+            if (stringContainsSpecialCharacters) {
+                sb.append(processLine(nextElement));
+            } else {
+                sb.append(nextElement);
+            }
 
-            if (quotechar != NO_QUOTE_CHARACTER)
+            if ((applyQuotesToAll || stringContainsSpecialCharacters) && quotechar != NO_QUOTE_CHARACTER)
                 sb.append(quotechar);
         }
 
         sb.append(lineEnd);
         pw.write(sb.toString());
+    }
 
+    /**
+     * Writes the next line to the file.
+     *
+     * @param nextLine a string array with each comma-separated element as a separate
+     *                 entry.
+     */
+    public void writeNext(String[] nextLine) {
+        writeNext(nextLine, true);
     }
 
     private boolean stringContainsSpecialCharacters(String line) {
-        return line.indexOf(quotechar) != -1 || line.indexOf(escapechar) != -1;
+        return line.indexOf(quotechar) != -1 || line.indexOf(escapechar) != -1 || line.indexOf(separator) != -1 || line.indexOf("\n") != -1 || line.indexOf("\r") != -1;
     }
 
     protected StringBuilder processLine(String nextElement) {

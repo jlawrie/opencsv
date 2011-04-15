@@ -42,6 +42,8 @@ public class CSVParser {
 
     private final boolean ignoreLeadingWhiteSpace;
 
+    private final boolean ignoreQuotations;
+
     /**
      * The default separator to use if none is supplied to the constructor.
      */
@@ -75,10 +77,14 @@ public class CSVParser {
     public static final boolean DEFAULT_IGNORE_LEADING_WHITESPACE = true;
 
     /**
-     * This is the "null" character - if a value is set to this then it is ignored.
      * I.E. if the quote character is set to null then there is no quote character.
      */
-    public static final char NULL_CHARACTER = '\0';
+    public static final boolean DEFAULT_IGNORE_QUOTATIONS = false;
+
+    /**
+     * This is the "null" character - if a value is set to this then it is ignored.
+     */
+    static final char NULL_CHARACTER = '\0';
 
     /**
      * Constructs CSVParser using a comma for the separator.
@@ -142,6 +148,21 @@ public class CSVParser {
      * @param ignoreLeadingWhiteSpace if true, white space in front of a quote in a field is ignored
      */
     public CSVParser(char separator, char quotechar, char escape, boolean strictQuotes, boolean ignoreLeadingWhiteSpace) {
+        this(separator, quotechar, escape, strictQuotes, ignoreLeadingWhiteSpace, DEFAULT_IGNORE_QUOTATIONS);
+    }
+
+    /**
+     * Constructs CSVReader with supplied separator and quote char.
+     * Allows setting the "strict quotes" and "ignore leading whitespace" flags
+     *
+     * @param separator               the delimiter to use for separating entries
+     * @param quotechar               the character to use for quoted elements
+     * @param escape                  the character to use for escaping a separator or quote
+     * @param strictQuotes            if true, characters outside the quotes are ignored
+     * @param ignoreLeadingWhiteSpace if true, white space in front of a quote in a field is ignored
+     */
+    public CSVParser(char separator, char quotechar, char escape, boolean strictQuotes, boolean ignoreLeadingWhiteSpace,
+                     boolean ignoreQuotations) {
         if (anyCharactersAreTheSame(separator, quotechar, escape)) {
             throw new UnsupportedOperationException("The separator, quote, and escape characters must be different!");
         }
@@ -153,6 +174,7 @@ public class CSVParser {
         this.escape = escape;
         this.strictQuotes = strictQuotes;
         this.ignoreLeadingWhiteSpace = ignoreLeadingWhiteSpace;
+        this.ignoreQuotations = ignoreQuotations;
     }
 
     private boolean anyCharactersAreTheSame(char separator, char quotechar, char escape) {
@@ -208,22 +230,22 @@ public class CSVParser {
         if (pending != null) {
             sb.append(pending);
             pending = null;
-            inQuotes = true;
+            inQuotes = !this.ignoreQuotations;//true;
         }
         for (int i = 0; i < nextLine.length(); i++) {
 
             char c = nextLine.charAt(i);
             if (c == this.escape) {
-                if (isNextCharacterEscapable(nextLine, inQuotes || inField, i)) {
+                if (isNextCharacterEscapable(nextLine, (inQuotes && !ignoreQuotations) || inField, i)) {
                     sb.append(nextLine.charAt(i + 1));
                     i++;
                 }
             } else if (c == quotechar) {
-                if (isNextCharacterEscapedQuote(nextLine, inQuotes || inField, i)) {
+                if (isNextCharacterEscapedQuote(nextLine, (inQuotes && !ignoreQuotations) || inField, i)) {
                     sb.append(nextLine.charAt(i + 1));
                     i++;
                 } else {
-                    //inQuotes = !inQuotes;
+                    inQuotes = !inQuotes;
 
                     // the tricky case of an embedded quote in the middle: a,bc"d"ef,g
                     if (!strictQuotes) {
@@ -234,31 +256,28 @@ public class CSVParser {
                                 ) {
 
                             if (ignoreLeadingWhiteSpace && sb.length() > 0 && isAllWhiteSpace(sb)) {
-                                sb.setLength(0);  //discard white space leading up to quote
+                                sb = new StringBuilder(INITIAL_READ_SIZE);  //discard white space leading up to quote
                             } else {
                                 sb.append(c);
-                                //continue;
                             }
 
                         }
                     }
-
-                    inQuotes = !inQuotes;
                 }
                 inField = !inField;
-            } else if (c == separator && !inQuotes) {
+            } else if (c == separator && !(inQuotes && !ignoreQuotations)) {
                 tokensOnThisLine.add(sb.toString());
-                sb.setLength(0); // start work on next token
+                sb = new StringBuilder(INITIAL_READ_SIZE); // start work on next token
                 inField = false;
             } else {
-                if (!strictQuotes || inQuotes) {
+                if (!strictQuotes || (inQuotes && !ignoreQuotations)) {
                     sb.append(c);
                     inField = true;
                 }
             }
         }
         // line is done - check status
-        if (inQuotes) {
+        if ((inQuotes && !ignoreQuotations)) {
             if (multi) {
                 // continuing a quoted section, re-append newline
                 sb.append("\n");
