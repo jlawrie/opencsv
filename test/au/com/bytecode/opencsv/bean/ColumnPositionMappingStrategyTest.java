@@ -58,7 +58,7 @@ public class ColumnPositionMappingStrategyTest {
     @Test
     public void testParseWithTrailingSpaces() {
         String s = "" +
-                "kyle  ,123456  ,emp123  ,1   \n" +
+                "kyle  ,123456  ,emp123  ,  1   \n" +
                 "jimmy,abcnum,cust09878,2   ";
 
         String[] columns = new String[]{"name", "orderNumber", "id", "num"};
