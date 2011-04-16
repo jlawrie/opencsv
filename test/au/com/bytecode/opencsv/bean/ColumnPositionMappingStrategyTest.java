@@ -41,8 +41,7 @@ public class ColumnPositionMappingStrategyTest {
                 "kyle,123456,emp123,1\n" +
                 "jimmy,abcnum,cust09878,2";
 
-        String[] columns = new String[]{"name", "orderNumber", "id", "num"};
-        strat.setColumnMapping(columns);
+        strat.setColumnMapping("name", "orderNumber", "id", "num");
 
         CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
         List<MockBean> list = csv.parse(strat, new StringReader(s));
@@ -94,8 +93,7 @@ public class ColumnPositionMappingStrategyTest {
     @Test
     public void testGetColumnNames() {
 
-        String[] columns = new String[]{"name", null, "id"};
-        strat.setColumnMapping(columns);
+        strat.setColumnMapping("name", null, "id");
 
         assertEquals("name", strat.getColumnName(0));
         assertEquals(null, strat.getColumnName(1));
@@ -106,8 +104,7 @@ public class ColumnPositionMappingStrategyTest {
     @Test
     public void testGetColumnNamesArray() {
 
-        String[] columns = new String[]{"name", null, "id"};
-        strat.setColumnMapping(columns);
+        strat.setColumnMapping("name", null, "id");
         String[] mapping = strat.getColumnMapping();
 
         assertEquals(3, mapping.length);
@@ -117,12 +114,30 @@ public class ColumnPositionMappingStrategyTest {
     }
 
     @Test
-    public void getColumnNamesHandlesNull() {
-        strat.setColumnMapping(null);
+    public void getColumnNamesWhenNullArray() {
+        strat.setColumnMapping((String[]) null);
 
         assertEquals(null, strat.getColumnName(0));
         assertEquals(null, strat.getColumnName(1));
-        assertNull(strat.getColumnMapping());
+        assertArrayEquals(new String[0], strat.getColumnMapping());
+    }
+
+    @Test
+    public void getColumnNamesWhenNullColumnName() {
+        String[] columns = {null};
+        strat.setColumnMapping(columns);
+
+        assertEquals(null, strat.getColumnName(0));
+        assertEquals(null, strat.getColumnName(1));
+        assertArrayEquals(columns, strat.getColumnMapping());
+    }
+
+    @Test
+    public void getColumnNamesWhenEmptyMapping() {
+        strat.setColumnMapping();
+
+        assertEquals(null, strat.getColumnName(0));
+        assertArrayEquals(new String[0], strat.getColumnMapping());
     }
 
 }
