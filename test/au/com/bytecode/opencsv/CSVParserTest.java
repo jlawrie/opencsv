@@ -44,6 +44,30 @@ public class CSVParserTest {
         assertFalse(csvParser.isPending());
     }
 
+    @Test
+    public void parseSimpleQuotedString() throws IOException {
+
+        String[] nextLine = csvParser.parseLine("\"a\",\"b\",\"c\"");
+        assertEquals(3, nextLine.length);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
+        assertFalse(csvParser.isPending());
+    }
+
+    @Test
+    public void parseSimpleQuotedStringWithSpaces() throws IOException {
+        CSVParser parser = new CSVParser(CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER,
+                true, false);
+
+        String[] nextLine = parser.parseLine(" \"a\" , \"b\" , \"c\" ");
+        assertEquals(3, nextLine.length);
+        assertEquals("a", nextLine[0]);
+        assertEquals("b", nextLine[1]);
+        assertEquals("c", nextLine[2]);
+        assertFalse(parser.isPending());
+    }
+
     /**
      * Tests quotes in the middle of an element.
      *
