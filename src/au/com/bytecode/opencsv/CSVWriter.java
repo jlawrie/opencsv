@@ -16,10 +16,7 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -29,7 +26,7 @@ import java.util.List;
  *
  * @author Glen Smith
  */
-public class CSVWriter implements Closeable {
+public class CSVWriter implements Closeable, Flushable {
 
     public static final int INITIAL_STRING_SIZE = 128;
 
@@ -328,4 +325,11 @@ public class CSVWriter implements Closeable {
         this.resultService = resultService;
     }
 
+    public void flushQuietly() {
+        try {
+            flush();
+        } catch (IOException e) {
+            // catch exception and ignore.
+        }
+    }
 }

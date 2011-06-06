@@ -287,6 +287,25 @@ public class CSVWriterTest {
 
     }
 
+    @Test(expected = IOException.class)
+    public void flushWillThrowIOException() throws IOException {
+        String[] line = {"Foo", "bar's"};
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriterExceptionThrower(sw);
+        csvw.writeNext(line);
+        csvw.flush();
+    }
+
+    @Test
+    public void flushQuietlyWillNotThrowException() {
+        String[] line = {"Foo", "bar's"};
+        StringWriter sw = new StringWriter();
+        CSVWriter csvw = new CSVWriterExceptionThrower(sw);
+        csvw.writeNext(line);
+        csvw.flushQuietly();
+    }
+
+
     @Test
     public void testAlternateEscapeChar() {
         String[] line = {"Foo", "bar's"};
