@@ -262,6 +262,39 @@ public class CSVParserTest {
     }
 
     /**
+     * This is an interesting issue where the data does not use quotes but IS using a quote within the field as a
+     * inch symbol.  So we want to keep that quote as part of the field and not as the start or end of a field.
+     *
+     * Test data is as follows.
+     *
+     * RPO;2012;P; ; ; ;SDX;ACCESSORY WHEEL, 16", ALUMINUM, DESIGN 1
+     * RPO;2012;P; ; ; ;SDZ;ACCESSORY WHEEL - 17" - ALLOY - DESIGN 1
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testIssue3314579() throws IOException {
+        csvParser = new CSVParser(';',
+                CSVParser.DEFAULT_QUOTE_CHARACTER,
+                CSVParser.DEFAULT_ESCAPE_CHARACTER,
+                CSVParser.DEFAULT_STRICT_QUOTES,
+                CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE,
+                true);
+        String testString = "RPO;2012;P; ; ; ;SDX;ACCESSORY WHEEL, 16\", ALUMINUM, DESIGN 1";
+
+        String[] nextLine = csvParser.parseLine(testString);
+        assertEquals(8, nextLine.length);
+        assertEquals("RPO", nextLine[0]);
+        assertEquals("2012", nextLine[1]);
+        assertEquals("P", nextLine[2]);
+        assertEquals(" ", nextLine[3]);
+        assertEquals(" ", nextLine[4]);
+        assertEquals(" ", nextLine[5]);
+        assertEquals("SDX", nextLine[6]);
+        assertEquals("ACCESSORY WHEEL, 16\", ALUMINUM, DESIGN 1", nextLine[7]);
+    }
+
+    /**
      * Test issue 2263439 where an escaped quote was causing the parse to fail.
      * <p/>
      * Special thanks to Chris Morris for fixing this (id 1979054)
