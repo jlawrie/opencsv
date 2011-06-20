@@ -15,7 +15,9 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.sql.*;
@@ -36,34 +38,33 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void canPrintColumnNames() throws SQLException {
-        MockResultSet resultSet = new MockResultSet();
-        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
 
         String[] expectedNames = {"name1", "name2", "name3"};
-        metaData.setColumnNames(expectedNames);
-        resultSet.setMetaData(metaData);
+
+        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames);
+
+        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
+
+        // end expects
 
         ResultSetHelperService service = new ResultSetHelperService();
 
         String[] columnNames = service.getColumnNames(resultSet);
-        assertArrayEquals(expectedNames, columnNames);
+        Assert.assertArrayEquals(expectedNames, columnNames);
 
     }
 
     @Test
     public void getObjectFromResultSet() throws SQLException, IOException {
-        MockResultSet resultSet = new MockResultSet();
-        MockResultSetMetaData metaData = new MockResultSetMetaData();
-
         String[] expectedNames = {"object", "Null Object"};
         String[] realValues = {"foo", null};
         String[] expectedValues = {"foo", ""};
-        int[] expectedTypes = {Types.JAVA_OBJECT,Types.JAVA_OBJECT};
+        int[] expectedTypes = {Types.JAVA_OBJECT, Types.JAVA_OBJECT};
 
-        metaData.setColumnNames(expectedNames);
-        metaData.setColumnTypes(expectedTypes);
-        resultSet.setMetaData(metaData);
-        resultSet.setColumnValues(realValues);
+        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
+        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -80,7 +81,7 @@ public class ResultSetHelperServiceTest {
         String[] expectedNames = {"bit", "Null bit"};
         String[] realValues = {"1", null};
         String[] expectedValues = {"1", ""};
-        int[] expectedTypes = {Types.BIT,Types.BIT};
+        int[] expectedTypes = {Types.BIT, Types.BIT};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -102,7 +103,7 @@ public class ResultSetHelperServiceTest {
         String[] expectedNames = {"true", "false", "TRUE", "FALSE", "Null"};
         String[] realValues = {"true", "false", "TRUE", "FALSE", null};
         String[] expectedValues = {"true", "false", "true", "false", "false"};
-        int[] expectedTypes = {Types.BOOLEAN,Types.BOOLEAN,Types.BOOLEAN,Types.BOOLEAN,Types.BOOLEAN};
+        int[] expectedTypes = {Types.BOOLEAN, Types.BOOLEAN, Types.BOOLEAN, Types.BOOLEAN, Types.BOOLEAN};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -124,7 +125,7 @@ public class ResultSetHelperServiceTest {
         String[] expectedNames = {"BigInt", "Null BigInt"};
         String[] realValues = {"100", null};
         String[] expectedValues = {"100", ""};
-        int[] expectedTypes = {Types.BIGINT,Types.BIGINT};
+        int[] expectedTypes = {Types.BIGINT, Types.BIGINT};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -146,7 +147,7 @@ public class ResultSetHelperServiceTest {
         String[] expectedNames = {"Decimal", "double", "float", "real", "numeric", "Null"};
         String[] realValues = {"1.1", "2.2", "3.3", "4.4", "5.5", null};
         String[] expectedValues = {"1.1", "2.2", "3.3", "4.4", "5.5", ""};
-        int[] expectedTypes = {Types.DECIMAL,Types.DOUBLE,Types.FLOAT,Types.REAL,Types.NUMERIC,Types.DECIMAL};
+        int[] expectedTypes = {Types.DECIMAL, Types.DOUBLE, Types.FLOAT, Types.REAL, Types.NUMERIC, Types.DECIMAL};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -168,7 +169,7 @@ public class ResultSetHelperServiceTest {
         String[] expectedNames = {"Integer", "tinyint", "smallint", "Null"};
         String[] realValues = {"1", "2", "3", null};
         String[] expectedValues = {"1", "2", "3", ""};
-        int[] expectedTypes = {Types.INTEGER,Types.TINYINT,Types.SMALLINT,Types.INTEGER};
+        int[] expectedTypes = {Types.INTEGER, Types.TINYINT, Types.SMALLINT, Types.INTEGER};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -190,7 +191,7 @@ public class ResultSetHelperServiceTest {
         String[] expectedNames = {"longvarchar", "varchar", "char", "Null"};
         String[] realValues = {"a", "b", "c", null};
         String[] expectedValues = {"a", "b", "c", ""};
-        int[] expectedTypes = {Types.LONGVARCHAR,Types.VARCHAR,Types.CHAR,Types.CHAR};
+        int[] expectedTypes = {Types.LONGVARCHAR, Types.VARCHAR, Types.CHAR, Types.CHAR};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -210,9 +211,9 @@ public class ResultSetHelperServiceTest {
         MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         String[] expectedNames = {"Array", "Null"};
-        String[] realValues = {"1",  null};
+        String[] realValues = {"1", null};
         String[] expectedValues = {"", ""};
-        int[] expectedTypes = {Types.ARRAY,Types.ARRAY};
+        int[] expectedTypes = {Types.ARRAY, Types.ARRAY};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -236,9 +237,9 @@ public class ResultSetHelperServiceTest {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
         String[] expectedNames = {"Date", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds),  null};
+        String[] realValues = {Long.toString(dateInMilliSeconds), null};
         String[] expectedValues = {dateFormat.format(date), ""};
-        int[] expectedTypes = {Types.DATE,Types.DATE};
+        int[] expectedTypes = {Types.DATE, Types.DATE};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -261,9 +262,9 @@ public class ResultSetHelperServiceTest {
         long dateInMilliSeconds = time.getTime();
 
         String[] expectedNames = {"Time", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds),  null};
+        String[] realValues = {Long.toString(dateInMilliSeconds), null};
         String[] expectedValues = {time.toString(), ""};
-        int[] expectedTypes = {Types.TIME,Types.TIME};
+        int[] expectedTypes = {Types.TIME, Types.TIME};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -287,9 +288,9 @@ public class ResultSetHelperServiceTest {
         SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
 
         String[] expectedNames = {"Timestamp", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds),  null};
+        String[] realValues = {Long.toString(dateInMilliSeconds), null};
         String[] expectedValues = {timeFormat.format(date), ""};
-        int[] expectedTypes = {Types.TIMESTAMP,Types.TIMESTAMP};
+        int[] expectedTypes = {Types.TIMESTAMP, Types.TIMESTAMP};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -311,9 +312,9 @@ public class ResultSetHelperServiceTest {
         String clobString = buildClobString(20);
 
         String[] expectedNames = {"Clob", "Null"};
-        String[] realValues = {clobString,  null};
+        String[] realValues = {clobString, null};
         String[] expectedValues = {clobString, ""};
-        int[] expectedTypes = {Types.CLOB,Types.CLOB};
+        int[] expectedTypes = {Types.CLOB, Types.CLOB};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -335,9 +336,9 @@ public class ResultSetHelperServiceTest {
         String clobString = buildClobString(0);
 
         String[] expectedNames = {"Clob", "Null"};
-        String[] realValues = {clobString,  null};
+        String[] realValues = {clobString, null};
         String[] expectedValues = {clobString, ""};
-        int[] expectedTypes = {Types.CLOB,Types.CLOB};
+        int[] expectedTypes = {Types.CLOB, Types.CLOB};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
@@ -359,9 +360,9 @@ public class ResultSetHelperServiceTest {
         String clobString = buildClobString(ResultSetHelperService.CLOBBUFFERSIZE + 1);
 
         String[] expectedNames = {"Clob", "Null"};
-        String[] realValues = {clobString,  null};
+        String[] realValues = {clobString, null};
         String[] expectedValues = {clobString, ""};
-        int[] expectedTypes = {Types.CLOB,Types.CLOB};
+        int[] expectedTypes = {Types.CLOB, Types.CLOB};
 
         metaData.setColumnNames(expectedNames);
         metaData.setColumnTypes(expectedTypes);
