@@ -31,10 +31,10 @@ public class ResultSetHelperService implements ResultSetHelper {
 
     // note: we want to maintain compatibility with Java 5 VM's
     // These types don't exist in Java 5
-    private static final int NVARCHAR = -9;
-    private static final int NCHAR = -15;
-    private static final int LONGNVARCHAR = -16;
-    private static final int NCLOB = 2011;
+    static final int NVARCHAR = -9;
+    static final int NCHAR = -15;
+    static final int LONGNVARCHAR = -16;
+    static final int NCLOB = 2011;
 
     public String[] getColumnNames(ResultSet rs) throws SQLException {
         List<String> names = new ArrayList<String>();

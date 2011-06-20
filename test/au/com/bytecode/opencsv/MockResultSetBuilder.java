@@ -1,10 +1,8 @@
 package au.com.bytecode.opencsv;
 
+import javax.sql.rowset.serial.SerialClob;
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,30 +25,25 @@ public class MockResultSetBuilder {
         when(resultSet.getMetaData()).thenReturn(metaData);
 
         for (int i = 0; i < columnValues.length; i++) {
-            setExpectToGetColumnValue(resultSet, i+1, columnValues[i], columnTypes[i], wnrl);
+            setExpectToGetColumnValue(resultSet, i + 1, columnValues[i], columnTypes[i], wnrl);
         }
 
-        if (!wnrl.isEmpty())
-        {
+        if (!wnrl.isEmpty()) {
             // Why I have to do it this way I have no idea. but I cannot pass in just an array of Boolean I
             // have to break it up into a first value and the rest of the values.
 
             Boolean firstValue = wnrl.get(0);
             wnrl.remove(0);
 
-            Boolean [] values = new Boolean[wnrl.size()];
+            Boolean[] values = new Boolean[wnrl.size()];
             int i = 0;
-            for (Boolean b : wnrl)
-            {
+            for (Boolean b : wnrl) {
                 values[i++] = b;
             }
 
-            if (!wnrl.isEmpty())
-            {
+            if (!wnrl.isEmpty()) {
                 when(resultSet.wasNull()).thenReturn(firstValue, values);
-            }
-            else
-            {
+            } else {
                 when(resultSet.wasNull()).thenReturn(firstValue);
             }
         }
@@ -85,7 +78,73 @@ public class MockResultSetBuilder {
                 when(rs.getInt(index)).thenReturn(value != null ? new Integer(value).intValue() : 0);
                 wnrl.add(value == null);
                 break;
+            case ResultSetHelperService.NVARCHAR: // todo : use rs.getNString
+            case ResultSetHelperService.NCHAR: // todo : use rs.getNString
+            case ResultSetHelperService.LONGNVARCHAR: // todo : use rs.getNString
+            case Types.LONGVARCHAR:
+            case Types.VARCHAR:
+            case Types.CHAR:
+                when(rs.getString(index)).thenReturn(value);
+                break;
+            case Types.DATE:
+                Date date = createDateFromMilliSeconds(value);
+                when(rs.getDate(index)).thenReturn(date);
+                break;
+            case Types.TIME:
+                Time time = createTimeFromMilliSeconds(value);
+                when(rs.getTime(index)).thenReturn(time);
+                break;
+            case Types.TIMESTAMP:
+                Timestamp ts = createTimeStampFromMilliSeconds(value);
+                when(rs.getTimestamp(index)).thenReturn(ts);
+                break;
+            case ResultSetHelperService.NCLOB: // todo : use rs.getNClob
+            case Types.CLOB:
+                Clob c = createClobFromString(value);
+                when(rs.getClob(index)).thenReturn(c);
+                break;
+
         }
 
+    }
+
+    private static Clob createClobFromString(String value) throws SQLException {
+        return value != null ? new SerialClob(value.toCharArray()) : null;
+    }
+
+    private static Date createDateFromMilliSeconds(String value) {
+        Date date;
+
+        if (value == null) {
+            date = null;
+        } else {
+            Long milliseconds = Long.valueOf(value);
+            date = new Date(milliseconds);
+        }
+        return date;
+    }
+
+    private static Time createTimeFromMilliSeconds(String value) {
+        Time time;
+
+        if (value == null) {
+            time = null;
+        } else {
+            Long milliseconds = Long.valueOf(value);
+            time = new Time(milliseconds);
+        }
+        return time;
+    }
+
+    private static Timestamp createTimeStampFromMilliSeconds(String value) {
+        Timestamp timestamp;
+
+        if (value == null) {
+            timestamp = null;
+        } else {
+            Long milliseconds = Long.valueOf(value);
+            timestamp = new Timestamp(milliseconds);
+        }
+        return timestamp;
     }
 }
