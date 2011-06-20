@@ -19,6 +19,7 @@ package au.com.bytecode.opencsv;
 import org.junit.Test;
 
 import java.io.*;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -398,14 +399,11 @@ public class CSVWriterTest {
         String[] header = {"Foo", "Bar", "baz"};
         String[] value = {"v1", "v2", "v3"};
 
-        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
-
         StringWriter sw = new StringWriter();
         CSVWriter csvw = new CSVWriter(sw);
-        csvw.setResultService(mockHelperService);
+        csvw.setResultService(new ResultSetHelperService());
 
-        MockResultSet rs = new MockResultSet();
-        rs.setNumberOfResults(1);
+        ResultSet rs = MockResultSetBuilder.buildResultSet(header, value, 1);
 
         csvw.writeAll(rs, true); // don't need a result set since I am mocking the result.
         assertFalse(csvw.checkError());
@@ -420,14 +418,11 @@ public class CSVWriterTest {
         String[] header = {"Foo", "Bar", "baz"};
         String[] value = {"v1", "v2", "v3"};
 
-        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
-
         StringWriter sw = new StringWriter();
         CSVWriter csvw = new CSVWriter(sw);
-        csvw.setResultService(mockHelperService);
+        csvw.setResultService(new ResultSetHelperService());
 
-        MockResultSet rs = new MockResultSet();
-        rs.setNumberOfResults(3);
+        ResultSet rs = MockResultSetBuilder.buildResultSet(header, value, 3);
 
         csvw.writeAll(rs, true); // don't need a result set since I am mocking the result.
         assertFalse(csvw.checkError());
@@ -442,14 +437,11 @@ public class CSVWriterTest {
         String[] header = {"Foo", "Bar", "baz"};
         String[] value = {"v1", "v2", "v3"};
 
-        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
-
         StringWriter sw = new StringWriter();
         CSVWriter csvw = new CSVWriter(sw);
-        csvw.setResultService(mockHelperService);
+        csvw.setResultService(new ResultSetHelperService());
 
-        MockResultSet rs = new MockResultSet();
-        rs.setNumberOfResults(1);
+        ResultSet rs = MockResultSetBuilder.buildResultSet(header, value, 1);
 
         csvw.writeAll(rs, false); // don't need a result set since I am mocking the result.
         assertFalse(csvw.checkError());
@@ -464,16 +456,14 @@ public class CSVWriterTest {
         String[] header = {"Foo", "Bar", "baz"};
         String[] value = {"v1", "v2", "v3"};
 
-        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
-
         StringWriter sw = new StringWriter();
         CSVWriter csvw = new CSVWriter(sw);
-        csvw.setResultService(mockHelperService);
+        csvw.setResultService(new ResultSetHelperService());
 
-        MockResultSet rs = new MockResultSet();
-        rs.setNumberOfResults(3);
+        ResultSet rs = MockResultSetBuilder.buildResultSet(header, value, 3);
 
         csvw.writeAll(rs, false); // don't need a result set since I am mocking the result.
+
         assertFalse(csvw.checkError());
         String result = sw.toString();
 
@@ -486,14 +476,11 @@ public class CSVWriterTest {
         String[] header = {"Foo", "Bar", "baz"};
         String[] value = {"v1         ", "v2 ", "v3"};
 
-        MockResultSetHelper mockHelperService = new MockResultSetHelper(header, value);
-
         StringWriter sw = new StringWriter();
         CSVWriter csvw = new CSVWriter(sw);
-        csvw.setResultService(mockHelperService);
+        csvw.setResultService(new ResultSetHelperService());
 
-        MockResultSet rs = new MockResultSet();
-        rs.setNumberOfResults(1);
+        ResultSet rs = MockResultSetBuilder.buildResultSet(header, value, 1);
 
         csvw.writeAll(rs, true, true); // don't need a result set since I am mocking the result.
         assertFalse(csvw.checkError());

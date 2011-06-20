@@ -147,4 +147,44 @@ public class MockResultSetBuilder {
         }
         return timestamp;
     }
+
+    public static ResultSet buildResultSet(String[] header, String[] values, int numRows) throws SQLException {
+        ResultSet rs = mock(ResultSet.class);
+        ResultSetMetaData rsmd = MockResultSetMetaDataBuilder.buildMetaData(header);
+
+        when(rs.getMetaData()).thenReturn(rsmd);
+
+        for (int i = 0; i < values.length; i++) {
+            buildStringExpects(rs, i + 1, values[i], numRows);
+        }
+        buildNextExpect(rs, numRows);
+        return rs;  //To change body of created methods use File | Settings | File Templates.
+    }
+
+    private static void buildStringExpects(ResultSet rs, int index, String value, int numRows) throws SQLException {
+
+        if (numRows > 1) {
+            String[] columnValues = new String[numRows];
+            for (int i = 0; i < numRows - 1; i++) {
+                columnValues[i] = value;
+            }
+            when(rs.getString(index)).thenReturn(value, columnValues);
+        } else {
+            when(rs.getString(index)).thenReturn(value);
+        }
+
+    }
+
+    private static void buildNextExpect(ResultSet rs, int numRows) throws SQLException {
+        if (numRows == 1) {
+            when(rs.next()).thenReturn(true, false);
+        } else {
+            Boolean[] nextArray = new Boolean[numRows];
+            for (int i = 0; i < numRows; i++) {
+                nextArray[i] = i < (numRows - 1);
+            }
+            when(rs.next()).thenReturn(true, nextArray);
+        }
+
+    }
 }
