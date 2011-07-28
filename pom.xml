@@ -8,6 +8,11 @@
     <name>opencsv</name>
     <description>A simple library for reading and writing CSV in Java</description>
     <url>http://opencsv.sf.net</url>
+    <parent>
+    	<groupId>org.sonatype.oss</groupId>
+    	<artifactId>oss-parent</artifactId>
+    	<version>7</version>
+  	</parent>
     <licenses>
         <license>
             <name>Apache 2</name>
@@ -104,7 +109,7 @@
                 </configuration>
             </plugin>
             <!--
-                   gpg is required for Sonatype's publishing mechansism to central
+                   gpg is required for Sonatype's publishing mechanism to central
                -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -202,16 +207,10 @@
         </plugins>
     </reporting>
     <distributionManagement>
-        <repository>
-            <id>sonatype-repo</id>
-            <name>Sonatype Release Repo</name>
-            <url>http://oss.sonatype.org/content/repositories/sourceforge-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>sonatype-repo</id>
-            <name>Sonatype Snapshot Repo</name>
-            <url>http://oss.sonatype.org/content/repositories/sourceforge-snapshots/</url>
-        </snapshotRepository>
+		<!-- 
+			Deployment repos provided by Sonatype parent POM. For more info see:
+			https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide
+		-->
         <site>
             <id>opencsv.sf.net</id>
             <url>scp://shell.sourceforge.net/home/groups/o/op/opencsv/htdocs</url>
