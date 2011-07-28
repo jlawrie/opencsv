@@ -213,7 +213,7 @@
 		-->
         <site>
             <id>opencsv.sf.net</id>
-            <url>scp://shell.sourceforge.net/home/groups/o/op/opencsv/htdocs</url>
+            <url>scp://shell.sourceforge.net/home/project-web/opencsv/htdocs</url>
         </site>
     </distributionManagement>
 </project>
