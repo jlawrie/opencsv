@@ -222,7 +222,7 @@ List list = csv.parse(strat, yourReader);
 		<li>As part of that process, you'll need to add your JIRA account name as a comment to our <a href="https://issues.sonatype.org/browse/OSSRH-72">existing JIRA ticket</a>.</li> 
 		<li>Once you have access, change your Maven settings.xml on your local machine per Step 7a.1. in the Sonatype setup doc.</li>
 		<li>With all that in place, you can do a "mvn deploy" to release snapshots, or if you're ready to release, create a new branch, set the version in the POM, and "mvn release" again.</li>
-		<li>For prod releases, the release process puts things in the <a href="https://oss.sonatype.org/">staging Nexus</a> at Sonatype. It's a manual step from there to release (see step 8 of the Sonatype setup doc.</li>
+		<li>For prod releases, the release process puts things in the <a href="https://oss.sonatype.org/">staging Nexus</a> at Sonatype. It's a manual step from there to release (see step 8 of the Sonatype setup doc). First you have to "Close" the release in the staging repo (which checks the signatures and metadata), then they sent you an email, then you have to "Release" the release to central.</li>
 		<li>Finally, update the Sourceforge website with the latest Javadoc by using a "mvn site:deploy" (<a href="http://maven.apache.org/plugins/maven-site-plugin/examples/site-deploy-to-sourceforge.net.html">Details here</a>)</li>
 		</ul>
 		</answer>
