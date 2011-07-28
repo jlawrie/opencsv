@@ -210,7 +210,21 @@ List list = csv.parse(strat, yourReader);
 	<title>opencsv Development Stuff</title>
 	<faq id="where-is-the-snapshot-repo">
 		<question>Is there a snapshot Maven repo for opencsv?</question>
-		<answer>Yes. We're using a <a href="http://oss.sonatype.org/content/groups/sourceforge/net/sf/opencsv/opencsv/">repo</a> provided by the good folk at Sonatype.
+		<answer>Yes. We're using a <a href="https://oss.sonatype.org/content/repositories/snapshots/net/sf/opencsv/opencsv">repo</a> provided by the good folk at Sonatype.
+		</answer>
+	</faq>
+	<faq id="how-can-i-release-a-new-version">
+		<question>I'm an opencsv developer, how do you go about releasing a new version?</question>
+		<answer>Here's the general process for a release:
+		<ul>
+		<li>First you talk to everyone else on the team to make sure they're on the same page.</li> 
+		<li>After that you can follow the detailed instructions found on the <a href="https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide">Sonatype</a> site to get a JIRA username/password</li>
+		<li>As part of that process, you'll need to add your JIRA account name as a comment to our <a href="https://issues.sonatype.org/browse/OSSRH-72">existing JIRA ticket</a>.</li> 
+		<li>Once you have access, change your Maven settings.xml on your local machine per Step 7a.1. in the Sonatype setup doc.</li>
+		<li>With all that in place, you can do a "mvn deploy" to release snapshots, or if you're ready to release, create a new branch, set the version in the POM, and "mvn release" again.</li>
+		<li>For prod releases, the release process puts things in the <a href="https://oss.sonatype.org/">staging Nexus</a> at Sonatype. It's a manual step from there to release (see step 8 of the Sonatype setup doc.</li>
+		<li>Finally, update the Sourceforge website with the latest Javadoc by using a "mvn site:deploy" (<a href="http://maven.apache.org/plugins/maven-site-plugin/examples/site-deploy-to-sourceforge.net.html">Details here</a>)</li>
+		</ul>
 		</answer>
 	</faq>
 </part>
