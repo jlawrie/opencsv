@@ -36,6 +36,9 @@ public class ResultSetHelperService implements ResultSetHelper {
     static final int LONGNVARCHAR = -16;
     static final int NCLOB = 2011;
 
+    static final String DEFAULT_DATE_FORMAT = "dd-MMM-yyyy";
+    static final String DEFAULT_TIMESTAMP_FORMAT = "dd-MMM-yyyy HH:mm:ss";
+
     public String[] getColumnNames(ResultSet rs) throws SQLException {
         List<String> names = new ArrayList<String>();
         ResultSetMetaData metadata = rs.getMetaData();
@@ -49,16 +52,19 @@ public class ResultSetHelperService implements ResultSetHelper {
     }
 
     public String[] getColumnValues(ResultSet rs) throws SQLException, IOException {
-        return this.getColumnValues(rs, false);
+        return this.getColumnValues(rs, false, DEFAULT_DATE_FORMAT, DEFAULT_TIMESTAMP_FORMAT);
     }
 
     public String[] getColumnValues(ResultSet rs, boolean trim) throws SQLException, IOException {
+        return this.getColumnValues(rs, trim, DEFAULT_DATE_FORMAT, DEFAULT_TIMESTAMP_FORMAT);
+    }
 
+    public String[] getColumnValues(ResultSet rs, boolean trim, String dateFormatString, String timeFormatString) throws SQLException, IOException {
         List<String> values = new ArrayList<String>();
         ResultSetMetaData metadata = rs.getMetaData();
 
         for (int i = 0; i < metadata.getColumnCount(); i++) {
-            values.add(getColumnValue(rs, metadata.getColumnType(i + 1), i + 1, trim));
+            values.add(getColumnValue(rs, metadata.getColumnType(i + 1), i + 1, trim, dateFormatString, timeFormatString));
         }
 
         String[] valueArray = new String[values.size()];
@@ -83,11 +89,11 @@ public class ResultSetHelperService implements ResultSetHelper {
         return rs.wasNull() ? "" : Integer.toString(i);
     }
 
-    private String handleDate(ResultSet rs, int columnIndex) throws SQLException {
+    private String handleDate(ResultSet rs, int columnIndex, String dateFormatString) throws SQLException {
         java.sql.Date date = rs.getDate(columnIndex);
         String value = null;
         if (date != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString);
             value = dateFormat.format(date);
         }
         return value;
@@ -97,12 +103,12 @@ public class ResultSetHelperService implements ResultSetHelper {
         return time == null ? null : time.toString();
     }
 
-    private String handleTimestamp(Timestamp timestamp) {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+    private String handleTimestamp(Timestamp timestamp, String timestampFormatString) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat(timestampFormatString);
         return timestamp == null ? null : timeFormat.format(timestamp);
     }
 
-    private String getColumnValue(ResultSet rs, int colType, int colIndex, boolean trim)
+    private String getColumnValue(ResultSet rs, int colType, int colIndex, boolean trim, String dateFormatString, String timestampFormatString)
             throws SQLException, IOException {
 
         String value = "";
@@ -139,13 +145,13 @@ public class ResultSetHelperService implements ResultSetHelper {
                 value = handleInteger(rs, colIndex);
                 break;
             case Types.DATE:
-                value = handleDate(rs, colIndex);
+                value = handleDate(rs, colIndex, dateFormatString);
                 break;
             case Types.TIME:
                 value = handleTime(rs.getTime(colIndex));
                 break;
             case Types.TIMESTAMP:
-                value = handleTimestamp(rs.getTimestamp(colIndex));
+                value = handleTimestamp(rs.getTimestamp(colIndex), timestampFormatString);
                 break;
             case NVARCHAR: // todo : use rs.getNString
             case NCHAR: // todo : use rs.getNString
@@ -182,4 +188,5 @@ public class ResultSetHelperService implements ResultSetHelper {
         }
         return sb.toString();
     }
+
 }

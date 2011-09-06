@@ -32,4 +32,7 @@ public interface ResultSetHelper {
     public String[] getColumnValues(ResultSet rs) throws SQLException, IOException;
 
     public String[] getColumnValues(ResultSet rs, boolean trim) throws SQLException, IOException;
+
+    public String[] getColumnValues(ResultSet rs, boolean trim, String dateFormatString, String timeFormatString)
+            throws SQLException, IOException;
 }

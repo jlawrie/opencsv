@@ -201,7 +201,7 @@ public class ResultSetHelperServiceTest {
 
         Date date = new Date(109, 11, 15); // 12/15/2009
         long dateInMilliSeconds = date.getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(ResultSetHelperService.DEFAULT_DATE_FORMAT);
 
         String[] expectedNames = {"Date", "Null"};
         String[] realValues = {Long.toString(dateInMilliSeconds), null};
@@ -214,6 +214,29 @@ public class ResultSetHelperServiceTest {
         ResultSetHelperService service = new ResultSetHelperService();
 
         String[] columnValues = service.getColumnValues(resultSet);
+        assertArrayEquals(expectedValues, columnValues);
+
+    }
+
+    @Test
+    public void getDateFromResultSetUsingCustomFormat() throws SQLException, IOException {
+
+        String customDateFormat = "mm/dd/yy";
+        Date date = new Date(109, 11, 15); // 12/15/2009
+        long dateInMilliSeconds = date.getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(customDateFormat);
+
+        String[] expectedNames = {"Date", "Null"};
+        String[] realValues = {Long.toString(dateInMilliSeconds), null};
+        String[] expectedValues = {dateFormat.format(date), ""};
+        int[] expectedTypes = {Types.DATE, Types.DATE};
+
+        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
+        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+
+        ResultSetHelperService service = new ResultSetHelperService();
+
+        String[] columnValues = service.getColumnValues(resultSet, false, customDateFormat, null);
         assertArrayEquals(expectedValues, columnValues);
 
     }
@@ -243,7 +266,7 @@ public class ResultSetHelperServiceTest {
     public void getTimestampFromResultSet() throws SQLException, IOException {
         Timestamp date = new Timestamp(109, 11, 15, 12, 0, 0, 0); // 12/15/2009 noon
         long dateInMilliSeconds = date.getTime();
-        SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        SimpleDateFormat timeFormat = new SimpleDateFormat(ResultSetHelperService.DEFAULT_TIMESTAMP_FORMAT);
 
         String[] expectedNames = {"Timestamp", "Null"};
         String[] realValues = {Long.toString(dateInMilliSeconds), null};
@@ -256,6 +279,28 @@ public class ResultSetHelperServiceTest {
         ResultSetHelperService service = new ResultSetHelperService();
 
         String[] columnValues = service.getColumnValues(resultSet);
+        assertArrayEquals(expectedValues, columnValues);
+
+    }
+
+    @Test
+    public void getTimestampFromResultSetWithCustomFormat() throws SQLException, IOException {
+        Timestamp date = new Timestamp(109, 11, 15, 12, 0, 0, 0); // 12/15/2009 noon
+        long dateInMilliSeconds = date.getTime();
+        String customFormat = "mm/dd/yy HH:mm:ss";
+        SimpleDateFormat timeFormat = new SimpleDateFormat(customFormat);
+
+        String[] expectedNames = {"Timestamp", "Null"};
+        String[] realValues = {Long.toString(dateInMilliSeconds), null};
+        String[] expectedValues = {timeFormat.format(date), ""};
+        int[] expectedTypes = {Types.TIMESTAMP, Types.TIMESTAMP};
+
+        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
+        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+
+        ResultSetHelperService service = new ResultSetHelperService();
+
+        String[] columnValues = service.getColumnValues(resultSet, false, null, customFormat);
         assertArrayEquals(expectedValues, columnValues);
 
     }
