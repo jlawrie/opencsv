@@ -1,4 +1,4 @@
-package au.com.bytecode.opencsv.bean;
+package integrationTest.issue3402853;
 
 /**
  * Created by IntelliJ IDEA.
