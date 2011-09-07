@@ -48,7 +48,7 @@ public class HeaderColumnNameMappingStrategyUserTest {
         assertEquals(2, list.size());
         MockUserBean bean = list.get(0);
         assertEquals("rbst218@yahoo.com", bean.getEmail());
-        assertEquals("\"\"CHia Sia Ta", bean.getFirst_Name());
+        assertEquals("\\\"CHia Sia Ta", bean.getFirst_Name());
         assertEquals("", bean.getLast_Name());
         assertEquals("bc1er1163", bean.getProfile_Id());
     }
