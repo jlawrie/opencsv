@@ -86,7 +86,7 @@ public class MockUserBean {
     }
 
     private boolean isNameEmpty(String name) {
-        if (name == null || name.isEmpty() || DEFAULT_BLANK_FIELD.equals(name)) {
+        if (name == null || name.length() == 0 || DEFAULT_BLANK_FIELD.equals(name)) {
             return true;
         }
 
