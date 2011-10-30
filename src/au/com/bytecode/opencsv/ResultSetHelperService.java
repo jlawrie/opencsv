@@ -159,10 +159,11 @@ public class ResultSetHelperService implements ResultSetHelper {
             case Types.LONGVARCHAR:
             case Types.VARCHAR:
             case Types.CHAR:
-                if (trim) {
-                    value = rs.getString(colIndex).trim();
+                String columnValue = rs.getString(colIndex);
+                if (trim && columnValue != null) {
+                    value = columnValue.trim();
                 } else {
-                    value = rs.getString(colIndex);
+                    value = columnValue;
                 }
                 break;
             default:

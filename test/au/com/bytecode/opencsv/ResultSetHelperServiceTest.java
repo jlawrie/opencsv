@@ -179,6 +179,24 @@ public class ResultSetHelperServiceTest {
     }
 
     @Test
+    public void getCharHandlesNulls() throws SQLException, IOException {
+
+        String[] expectedNames = {"longvarchar", "varchar", "char", "Null"};
+        String[] realValues = {"a", "b", "c", null};
+        String[] expectedValues = {"a", "b", "c", ""};
+        int[] expectedTypes = {Types.LONGVARCHAR, Types.VARCHAR, Types.CHAR, Types.CHAR};
+
+        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
+        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+
+        ResultSetHelperService service = new ResultSetHelperService();
+
+        String[] columnValues = service.getColumnValues(resultSet, true);
+        assertArrayEquals(expectedValues, columnValues);
+
+    }
+
+    @Test
     public void getUnsupportedFromResultSet() throws SQLException, IOException {
 
         String[] expectedNames = {"Array", "Null"};
