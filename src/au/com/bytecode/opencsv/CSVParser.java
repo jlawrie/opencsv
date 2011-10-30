@@ -29,20 +29,20 @@ import java.util.List;
  */
 public class CSVParser {
 
-    private final char separator;
+    final char separator;
 
-    private final char quotechar;
+    final char quotechar;
 
-    private final char escape;
+    final char escape;
 
-    private final boolean strictQuotes;
+    final boolean strictQuotes;
 
     private String pending;
     private boolean inField = false;
 
-    private final boolean ignoreLeadingWhiteSpace;
+    final boolean ignoreLeadingWhiteSpace;
 
-    private final boolean ignoreQuotations;
+    final boolean ignoreQuotations;
 
     /**
      * The default separator to use if none is supplied to the constructor.
@@ -125,7 +125,7 @@ public class CSVParser {
     }
 
     /**
-     * Constructs CSVReader with supplied separator and quote char.
+     * Constructs CSVParser with supplied separator and quote char.
      * Allows setting the "strict quotes" flag
      *
      * @param separator    the delimiter to use for separating entries
@@ -138,7 +138,7 @@ public class CSVParser {
     }
 
     /**
-     * Constructs CSVReader with supplied separator and quote char.
+     * Constructs CSVParser with supplied separator and quote char.
      * Allows setting the "strict quotes" and "ignore leading whitespace" flags
      *
      * @param separator               the delimiter to use for separating entries
@@ -152,7 +152,7 @@ public class CSVParser {
     }
 
     /**
-     * Constructs CSVReader with supplied separator and quote char.
+     * Constructs CSVParser with supplied separator and quote char.
      * Allows setting the "strict quotes" and "ignore leading whitespace" flags
      *
      * @param separator               the delimiter to use for separating entries

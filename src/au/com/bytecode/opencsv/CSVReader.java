@@ -35,13 +35,11 @@ public class CSVReader implements Closeable, Iterable<String[]> {
 
     private boolean hasNext = true;
 
-    private CSVParser parser;
+    CSVParser parser;
 
-    private int skipLines;
+    int skipLines;
 
     private boolean linesSkiped;
-
-    private boolean outOfLines = false;
 
     /**
      * The default line to start reading.
@@ -156,9 +154,25 @@ public class CSVReader implements Closeable, Iterable<String[]> {
      * @param ignoreLeadingWhiteSpace it true, parser should ignore white space before a quote in a field
      */
     public CSVReader(Reader reader, char separator, char quotechar, char escape, int line, boolean strictQuotes, boolean ignoreLeadingWhiteSpace) {
-        this.br = new BufferedReader(reader);
-        this.parser = new CSVParser(separator, quotechar, escape, strictQuotes, ignoreLeadingWhiteSpace);
+        this(reader,
+                line,
+                new CSVParser(separator, quotechar, escape, strictQuotes, ignoreLeadingWhiteSpace));
+    }
+
+    /**
+     * Constructs CSVReader with supplied separator and quote char.
+     *
+     * @param reader    the reader to an underlying CSV source.
+     * @param line      the line number to skip for start reading
+     * @param csvParser the parser to use to parse input
+     */
+    public CSVReader(Reader reader, int line, CSVParser csvParser) {
+        this.br =
+                (reader instanceof BufferedReader ?
+                        (BufferedReader) reader :
+                        new BufferedReader(reader));
         this.skipLines = line;
+        this.parser = csvParser;
     }
 
     /**
