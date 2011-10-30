@@ -103,6 +103,14 @@ public class CSVWriterTest {
     }
 
     @Test
+    public void testSpecialCharacters() throws IOException {
+        // test quoted line
+        String[] quoteLine = {"This is a \r multiline entry", "so is \n this"};
+        String output = invokeWriter(quoteLine);
+        assertEquals("'This is a \r multiline entry','so is \n this'\n", output);
+    }
+
+    @Test
     public void parseLineWithBothEscapeAndQuoteChar() throws IOException {
         // test quoted line
         String[] quoteLine = {"This is a 'multiline' entry", "so is \n this"};
