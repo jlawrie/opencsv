@@ -1,5 +1,13 @@
 package au.com.bytecode.opencsv.exception;
 
+/**
+ * I apologize for the existence of this class...
+ * 
+ * Couldn't figure out a cleaner way of making the Iterator work...
+ * 
+ * @author bothajo
+ *
+ */
 public class CSVRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 7303281195236049701L;

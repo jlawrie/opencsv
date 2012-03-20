@@ -8,6 +8,15 @@ import java.util.Iterator;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.exception.CSVRuntimeException;
 
+/**
+ * Better to use this class t map beans from huge CSV files...
+ * 
+ * Muuuch better on memory...
+ * 
+ * @author bothajo
+ *
+ * @param <T>
+ */
 public class CsvToBeanIterator<T> extends CsvToBean<T> implements Iterator<T> {
 
 	private MappingStrategy<T> mapper;
