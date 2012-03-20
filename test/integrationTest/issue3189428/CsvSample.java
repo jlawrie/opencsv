@@ -98,12 +98,12 @@ public class CsvSample {
      */
     protected void testMappingStrategyRead(String originalCommentText)
             throws FileNotFoundException {
-        ColumnPositionMappingStrategy mappingStrategy = new ColumnPositionMappingStrategy();
+        ColumnPositionMappingStrategy<MyBean> mappingStrategy = new ColumnPositionMappingStrategy<MyBean>();
         mappingStrategy.setType(MyBean.class);
         String[] columns = new String[]{"name", "value", "amount1", "currency", "comments"}; // the fields to bind to in your JavaBean
         mappingStrategy.setColumnMapping(columns);
 
-        CsvToBean csv = new CsvToBean();
+        CsvToBean<MyBean> csv = new CsvToBean<MyBean>();
         CSVReader reader = new CSVReader(new FileReader(filePath), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER, 0, false, false);
         List<MyBean> list = csv.parse(mappingStrategy, reader);
 
