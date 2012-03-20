@@ -9,13 +9,12 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.exception.CSVRuntimeException;
 
 /**
- * Better to use this class t map beans from huge CSV files...
- * 
- * Muuuch better on memory...
+ * Somewhat better on memory when mapping massive CSV files -- which I have to do...
  * 
  * @author bothajo
  *
  * @param <T>
+ * 
  */
 public class CsvToBeanIterator<T> extends CsvToBean<T> implements Iterator<T> {
 

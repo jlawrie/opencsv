@@ -1,10 +1,8 @@
 package au.com.bytecode.opencsv.exception;
 
 /**
- * I apologize for the existence of this class...
- * 
- * Couldn't figure out a cleaner way of making the Iterator work...
- * 
+ * I apologize for this class -- haven't figured out
+ * a cleaner way of making the CsvToBeanIterator work...
  * @author bothajo
  *
  */

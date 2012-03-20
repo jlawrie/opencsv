@@ -8,15 +8,6 @@ import au.com.bytecode.opencsv.bean.CsvToBeanIterator;
 import au.com.bytecode.opencsv.bean.ColumnPositionMappingStrategy;
 import au.com.bytecode.opencsv.exception.CSVRuntimeException;
 
-/**
- * Figure it out...
- * 
- * Something tells me the interface implemented might be a clue...
- * 
- * @author bothajo
- *
- * @param <T>
- */
 public class IterableCSVToBeanReader<T> extends CSVReader implements Iterable<T> {
 	
 	private ColumnPositionMappingStrategy<T> mapper;
