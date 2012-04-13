@@ -1,2 +1,6 @@
 #ignore class files
 *.class
+#ignore target directory
+target/
+#ignore everything in target just in case...
+target/**/*
