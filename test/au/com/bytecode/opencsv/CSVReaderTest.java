@@ -18,19 +18,11 @@ package au.com.bytecode.opencsv;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
-import java.nio.CharBuffer;
-import java.util.Iterator;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.notNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class CSVReaderTest {
 
@@ -451,49 +443,6 @@ public class CSVReaderTest {
         sb.append("a,b,c,ddd\\\"eee\nf,g,h,\"iii,jjj\"");
 
         CSVReader c = new CSVReader(new StringReader(sb.toString()), CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_ESCAPE_CHARACTER, CSVReader.DEFAULT_SKIP_LINES, CSVParser.DEFAULT_STRICT_QUOTES, CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE);
-    }
-
-    /**
-     * Tests iterating over a reader.
-     *
-     * @throws IOException if the reader fails.
-     */
-    @Test
-    public void testIteratorFunctionality() throws IOException {
-        String[][] expectedResult = new String[7][];
-        expectedResult[0] = new String[]{"a", "b", "c"};
-        expectedResult[1] = new String[]{"a", "b,b,b", "c"};
-        expectedResult[2] = new String[]{"", "", ""};
-        expectedResult[3] = new String[]{"a", "PO Box 123,\nKippax,ACT. 2615.\nAustralia", "d."};
-        expectedResult[4] = new String[]{"Glen \"The Man\" Smith", "Athlete", "Developer"};
-        expectedResult[5] = new String[]{"\"\"", "test"};
-        expectedResult[6] = new String[]{"a\nb", "b", "\nd", "e"};
-        int idx = 0;
-        for (String[] line : csvr) {
-            String[] expectedLine = expectedResult[idx++];
-            assertArrayEquals(expectedLine, line);
-        }
-    }
-
-    @Test
-    public void canCloseReader() throws IOException {
-        csvr.close();
-    }
-
-    @Test
-    public void canCreateIteratorFromReader() {
-        assertNotNull(csvr.iterator());
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void creatingIteratorForReaderWithNullDataThrowsRuntimeException() throws IOException {
-        Reader mockReader = mock(Reader.class);
-        when(mockReader.read(Matchers.<CharBuffer>any())).thenThrow(new IOException("test io exception"));
-        when(mockReader.read()).thenThrow(new IOException("test io exception"));
-        when(mockReader.read((char[]) notNull())).thenThrow(new IOException("test io exception"));
-        when(mockReader.read((char[]) notNull(), anyInt(), anyInt())).thenThrow(new IOException("test io exception"));
-        csvr = new CSVReader(mockReader);
-        Iterator iterator = csvr.iterator();
     }
 
 }

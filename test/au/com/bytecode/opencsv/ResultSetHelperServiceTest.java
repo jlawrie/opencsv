@@ -15,9 +15,7 @@ package au.com.bytecode.opencsv;
  limitations under the License.
  */
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.sql.*;
@@ -38,33 +36,34 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void canPrintColumnNames() throws SQLException {
-
-        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         String[] expectedNames = {"name1", "name2", "name3"};
-
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames);
-
-        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
-
-        // end expects
+        metaData.setColumnNames(expectedNames);
+        resultSet.setMetaData(metaData);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
         String[] columnNames = service.getColumnNames(resultSet);
-        Assert.assertArrayEquals(expectedNames, columnNames);
+        assertArrayEquals(expectedNames, columnNames);
 
     }
 
     @Test
     public void getObjectFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         String[] expectedNames = {"object", "Null Object"};
         String[] realValues = {"foo", null};
         String[] expectedValues = {"foo", ""};
-        int[] expectedTypes = {Types.JAVA_OBJECT, Types.JAVA_OBJECT};
+        int[] expectedTypes = {Types.JAVA_OBJECT,Types.JAVA_OBJECT};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -75,14 +74,18 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getBitFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         String[] expectedNames = {"bit", "Null bit"};
         String[] realValues = {"1", null};
         String[] expectedValues = {"1", ""};
-        int[] expectedTypes = {Types.BIT, Types.BIT};
+        int[] expectedTypes = {Types.BIT,Types.BIT};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -93,13 +96,18 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getBooleanFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         String[] expectedNames = {"true", "false", "TRUE", "FALSE", "Null"};
         String[] realValues = {"true", "false", "TRUE", "FALSE", null};
         String[] expectedValues = {"true", "false", "true", "false", "false"};
-        int[] expectedTypes = {Types.BOOLEAN, Types.BOOLEAN, Types.BOOLEAN, Types.BOOLEAN, Types.BOOLEAN};
+        int[] expectedTypes = {Types.BOOLEAN,Types.BOOLEAN,Types.BOOLEAN,Types.BOOLEAN,Types.BOOLEAN};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -110,13 +118,18 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getBigIntFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         String[] expectedNames = {"BigInt", "Null BigInt"};
         String[] realValues = {"100", null};
         String[] expectedValues = {"100", ""};
-        int[] expectedTypes = {Types.BIGINT, Types.BIGINT};
+        int[] expectedTypes = {Types.BIGINT,Types.BIGINT};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -127,14 +140,18 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getBigDecimalFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         String[] expectedNames = {"Decimal", "double", "float", "real", "numeric", "Null"};
         String[] realValues = {"1.1", "2.2", "3.3", "4.4", "5.5", null};
         String[] expectedValues = {"1.1", "2.2", "3.3", "4.4", "5.5", ""};
-        int[] expectedTypes = {Types.DECIMAL, Types.DOUBLE, Types.FLOAT, Types.REAL, Types.NUMERIC, Types.DECIMAL};
+        int[] expectedTypes = {Types.DECIMAL,Types.DOUBLE,Types.FLOAT,Types.REAL,Types.NUMERIC,Types.DECIMAL};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -145,13 +162,18 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getIntegerFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         String[] expectedNames = {"Integer", "tinyint", "smallint", "Null"};
         String[] realValues = {"1", "2", "3", null};
         String[] expectedValues = {"1", "2", "3", ""};
-        int[] expectedTypes = {Types.INTEGER, Types.TINYINT, Types.SMALLINT, Types.INTEGER};
+        int[] expectedTypes = {Types.INTEGER,Types.TINYINT,Types.SMALLINT,Types.INTEGER};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -162,14 +184,18 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getCharFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         String[] expectedNames = {"longvarchar", "varchar", "char", "Null"};
         String[] realValues = {"a", "b", "c", null};
         String[] expectedValues = {"a", "b", "c", ""};
-        int[] expectedTypes = {Types.LONGVARCHAR, Types.VARCHAR, Types.CHAR, Types.CHAR};
+        int[] expectedTypes = {Types.LONGVARCHAR,Types.VARCHAR,Types.CHAR,Types.CHAR};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -179,33 +205,19 @@ public class ResultSetHelperServiceTest {
     }
 
     @Test
-    public void getCharHandlesNulls() throws SQLException, IOException {
-
-        String[] expectedNames = {"longvarchar", "varchar", "char", "Null"};
-        String[] realValues = {"a", "b", "c", null};
-        String[] expectedValues = {"a", "b", "c", ""};
-        int[] expectedTypes = {Types.LONGVARCHAR, Types.VARCHAR, Types.CHAR, Types.CHAR};
-
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
-
-        ResultSetHelperService service = new ResultSetHelperService();
-
-        String[] columnValues = service.getColumnValues(resultSet, true);
-        assertArrayEquals(expectedValues, columnValues);
-
-    }
-
-    @Test
     public void getUnsupportedFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         String[] expectedNames = {"Array", "Null"};
-        String[] realValues = {"1", null};
+        String[] realValues = {"1",  null};
         String[] expectedValues = {"", ""};
-        int[] expectedTypes = {Types.ARRAY, Types.ARRAY};
+        int[] expectedTypes = {Types.ARRAY,Types.ARRAY};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -216,18 +228,22 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getDateFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         Date date = new Date(109, 11, 15); // 12/15/2009
         long dateInMilliSeconds = date.getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(ResultSetHelperService.DEFAULT_DATE_FORMAT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
         String[] expectedNames = {"Date", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds), null};
+        String[] realValues = {Long.toString(dateInMilliSeconds),  null};
         String[] expectedValues = {dateFormat.format(date), ""};
-        int[] expectedTypes = {Types.DATE, Types.DATE};
+        int[] expectedTypes = {Types.DATE,Types.DATE};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -237,41 +253,22 @@ public class ResultSetHelperServiceTest {
     }
 
     @Test
-    public void getDateFromResultSetUsingCustomFormat() throws SQLException, IOException {
-
-        String customDateFormat = "mm/dd/yy";
-        Date date = new Date(109, 11, 15); // 12/15/2009
-        long dateInMilliSeconds = date.getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(customDateFormat);
-
-        String[] expectedNames = {"Date", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds), null};
-        String[] expectedValues = {dateFormat.format(date), ""};
-        int[] expectedTypes = {Types.DATE, Types.DATE};
-
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
-
-        ResultSetHelperService service = new ResultSetHelperService();
-
-        String[] columnValues = service.getColumnValues(resultSet, false, customDateFormat, null);
-        assertArrayEquals(expectedValues, columnValues);
-
-    }
-
-    @Test
     public void getTimeFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
 
         Time time = new Time(12, 0, 0); // noon
         long dateInMilliSeconds = time.getTime();
 
         String[] expectedNames = {"Time", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds), null};
+        String[] realValues = {Long.toString(dateInMilliSeconds),  null};
         String[] expectedValues = {time.toString(), ""};
-        int[] expectedTypes = {Types.TIME, Types.TIME};
+        int[] expectedTypes = {Types.TIME,Types.TIME};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -282,17 +279,22 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getTimestampFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         Timestamp date = new Timestamp(109, 11, 15, 12, 0, 0, 0); // 12/15/2009 noon
         long dateInMilliSeconds = date.getTime();
-        SimpleDateFormat timeFormat = new SimpleDateFormat(ResultSetHelperService.DEFAULT_TIMESTAMP_FORMAT);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
 
         String[] expectedNames = {"Timestamp", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds), null};
+        String[] realValues = {Long.toString(dateInMilliSeconds),  null};
         String[] expectedValues = {timeFormat.format(date), ""};
-        int[] expectedTypes = {Types.TIMESTAMP, Types.TIMESTAMP};
+        int[] expectedTypes = {Types.TIMESTAMP,Types.TIMESTAMP};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -302,38 +304,21 @@ public class ResultSetHelperServiceTest {
     }
 
     @Test
-    public void getTimestampFromResultSetWithCustomFormat() throws SQLException, IOException {
-        Timestamp date = new Timestamp(109, 11, 15, 12, 0, 0, 0); // 12/15/2009 noon
-        long dateInMilliSeconds = date.getTime();
-        String customFormat = "mm/dd/yy HH:mm:ss";
-        SimpleDateFormat timeFormat = new SimpleDateFormat(customFormat);
-
-        String[] expectedNames = {"Timestamp", "Null"};
-        String[] realValues = {Long.toString(dateInMilliSeconds), null};
-        String[] expectedValues = {timeFormat.format(date), ""};
-        int[] expectedTypes = {Types.TIMESTAMP, Types.TIMESTAMP};
-
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
-
-        ResultSetHelperService service = new ResultSetHelperService();
-
-        String[] columnValues = service.getColumnValues(resultSet, false, null, customFormat);
-        assertArrayEquals(expectedValues, columnValues);
-
-    }
-
-    @Test
     public void getClobFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         String clobString = buildClobString(20);
 
         String[] expectedNames = {"Clob", "Null"};
-        String[] realValues = {clobString, null};
+        String[] realValues = {clobString,  null};
         String[] expectedValues = {clobString, ""};
-        int[] expectedTypes = {Types.CLOB, Types.CLOB};
+        int[] expectedTypes = {Types.CLOB,Types.CLOB};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -344,15 +329,20 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getEmptyClobFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         String clobString = buildClobString(0);
 
         String[] expectedNames = {"Clob", "Null"};
-        String[] realValues = {clobString, null};
+        String[] realValues = {clobString,  null};
         String[] expectedValues = {clobString, ""};
-        int[] expectedTypes = {Types.CLOB, Types.CLOB};
+        int[] expectedTypes = {Types.CLOB,Types.CLOB};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 
@@ -363,15 +353,20 @@ public class ResultSetHelperServiceTest {
 
     @Test
     public void getLargeClobFromResultSet() throws SQLException, IOException {
+        MockResultSet resultSet = new MockResultSet();
+        MockResultSetMetaData metaData = new MockResultSetMetaData();
+
         String clobString = buildClobString(ResultSetHelperService.CLOBBUFFERSIZE + 1);
 
         String[] expectedNames = {"Clob", "Null"};
-        String[] realValues = {clobString, null};
+        String[] realValues = {clobString,  null};
         String[] expectedValues = {clobString, ""};
-        int[] expectedTypes = {Types.CLOB, Types.CLOB};
+        int[] expectedTypes = {Types.CLOB,Types.CLOB};
 
-        ResultSetMetaData metaData = MockResultSetMetaDataBuilder.buildMetaData(expectedNames, expectedTypes);
-        ResultSet resultSet = MockResultSetBuilder.buildResultSet(metaData, realValues, expectedTypes);
+        metaData.setColumnNames(expectedNames);
+        metaData.setColumnTypes(expectedTypes);
+        resultSet.setMetaData(metaData);
+        resultSet.setColumnValues(realValues);
 
         ResultSetHelperService service = new ResultSetHelperService();
 

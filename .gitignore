@@ -1,6 +1,6 @@
-target
-myfile.csv
-opencsv.ipr
-opencsv.iml
-opencsv-2.0.1-SNAPSHOT.patch
-pom.xml.cobertura
+#ignore class files
+*.class
+#ignore target directory
+target/
+#ignore everything in target just in case...
+target/**/*
