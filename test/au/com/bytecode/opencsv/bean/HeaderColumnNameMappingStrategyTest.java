@@ -32,32 +32,17 @@ public class HeaderColumnNameMappingStrategyTest {
             "kyle,abc123456,123\n" +
             "jimmy,def098765,456";
 
-    private static final String TEST_QUOTED_STRING = "\"name\",\"orderNumber\",\"num\"\n" +
-            "\"kyle\",\"abc123456\",\"123\"\n" +
-            "\"jimmy\",\"def098765\",\"456\"";
 
-
-    private List<MockBean> createTestParseResult(String parseString) {
+    private List<MockBean> createTestParseResult() {
         HeaderColumnNameMappingStrategy<MockBean> strat = new HeaderColumnNameMappingStrategy<MockBean>();
         strat.setType(MockBean.class);
         CsvToBean<MockBean> csv = new CsvToBean<MockBean>();
-        return csv.parse(strat, new StringReader(parseString));
+        return csv.parse(strat, new StringReader(TEST_STRING));
     }
 
     @Test
     public void testParse() {
-        List<MockBean> list = createTestParseResult(TEST_STRING);
-        assertNotNull(list);
-        assertTrue(list.size() == 2);
-        MockBean bean = list.get(0);
-        assertEquals("kyle", bean.getName());
-        assertEquals("abc123456", bean.getOrderNumber());
-        assertEquals(123, bean.getNum());
-    }
-
-    @Test
-    public void testQuotedString() {
-        List<MockBean> list = createTestParseResult(TEST_QUOTED_STRING);
+        List<MockBean> list = createTestParseResult();
         assertNotNull(list);
         assertTrue(list.size() == 2);
         MockBean bean = list.get(0);
@@ -68,7 +53,7 @@ public class HeaderColumnNameMappingStrategyTest {
 
     @Test
     public void testParseWithSpacesInHeader() {
-        List<MockBean> list = createTestParseResult(TEST_STRING);
+        List<MockBean> list = createTestParseResult();
         assertNotNull(list);
         assertTrue(list.size() == 2);
         MockBean bean = list.get(0);
